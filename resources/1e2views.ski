@@ -1,0 +1,703 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<skirt-simulation-hierarchy format="9" producer="Python toolkit for SKIRT (SkiFile class)" time="2022-02-28T11:21:20" type="MonteCarloSimulation">
+  <MonteCarloSimulation numPackets="1e7" simulationMode="DustEmission" userLevel="Regular">
+    <random type="Random">
+      <Random seed="0" />
+    </random>
+    <units type="Units">
+      <ExtragalacticUnits fluxOutputStyle="Frequency" />
+    </units>
+    <cosmology type="Cosmology">
+      <LocalUniverseCosmology />
+    </cosmology>
+    <sourceSystem type="SourceSystem">
+      <SourceSystem maxWavelength="2000 micron" minWavelength="0.04 micron" sourceBias="0.5">
+        <sources type="Source">
+          <ParticleSource filename="stars.txt" importVelocity="true" importVelocityDispersion="false" sourceWeight="1" useColumns="" wavelengthBias="0.5">
+            <smoothingKernel type="SmoothingKernel">
+              <CubicSplineSmoothingKernel />
+            </smoothingKernel>
+            <sedFamily type="SEDFamily">
+              <FSPSSEDFamily imf="Chabrier" />
+            </sedFamily>
+            <wavelengthBiasDistribution type="WavelengthDistribution">
+              <LogWavelengthDistribution maxWavelength="2000 micron" minWavelength="0.04 micron" />
+            </wavelengthBiasDistribution>
+          </ParticleSource>
+          <ParticleSource filename="youngStars.txt" importVelocity="true" importVelocityDispersion="false" sourceWeight="1" useColumns="" wavelengthBias="0.5">
+            <smoothingKernel type="SmoothingKernel">
+              <CubicSplineSmoothingKernel />
+            </smoothingKernel>
+            <sedFamily type="SEDFamily">
+              <MappingsSEDFamily />
+            </sedFamily>
+            <wavelengthBiasDistribution type="WavelengthDistribution">
+              <LogWavelengthDistribution maxWavelength="2000 micron" minWavelength="0.04 micron" />
+            </wavelengthBiasDistribution>
+          </ParticleSource>
+        </sources>
+      </SourceSystem>
+    </sourceSystem>
+    <mediumSystem type="MediumSystem">
+      <MediumSystem>
+        <radiationFieldOptions type="RadiationFieldOptions">
+          <RadiationFieldOptions>
+            <radiationFieldWLG type="DisjointWavelengthGrid">
+              <LogWavelengthGrid maxWavelength="10 micron" minWavelength="0.04 micron" numWavelengths="40" />
+            </radiationFieldWLG>
+          </RadiationFieldOptions>
+        </radiationFieldOptions>
+        <photonPacketOptions type="PhotonPacketOptions">
+          <PhotonPacketOptions minScattEvents="0" minWeightReduction="1e4" pathLengthBias="0.5" />
+        </photonPacketOptions>
+        <dustEmissionOptions type="DustEmissionOptions">
+          <DustEmissionOptions dustEmissionType="Stochastic" includeHeatingByCMB="false" wavelengthBias="0.5">
+            <cellLibrary type="SpatialCellLibrary">
+              <AllCellsLibrary />
+            </cellLibrary>
+            <dustEmissionWLG type="DisjointWavelengthGrid">
+              <NestedLogWavelengthGrid maxWavelengthBaseGrid="2000 micron" maxWavelengthSubGrid="25 micron" minWavelengthBaseGrid="0.2 micron" minWavelengthSubGrid="3 micron" numWavelengthsBaseGrid="308" numWavelengthsSubGrid="200" />
+            </dustEmissionWLG>
+            <wavelengthBiasDistribution type="WavelengthDistribution">
+              <LogWavelengthDistribution maxWavelength="2000 micron" minWavelength="0.2 micron" />
+            </wavelengthBiasDistribution>
+          </DustEmissionOptions>
+        </dustEmissionOptions>
+        <media type="Medium">
+          <ParticleMedium filename="gas.txt" importMagneticField="false" importMetallicity="true" importTemperature="true" importVariableMixParams="false" importVelocity="false" massFraction="1" maxTemperature="8000 K" useColumns="">
+            <smoothingKernel type="SmoothingKernel">
+              <CubicSplineSmoothingKernel />
+            </smoothingKernel>
+            <materialMix type="MaterialMix">
+              <ThemisDustMix numHydrocarbonSizes="15" numSilicateSizes="15" />
+            </materialMix>
+          </ParticleMedium>
+        </media>
+        <grid type="SpatialGrid">
+          <PolicyTreeSpatialGrid maxX="105000 pc" maxY="105000 pc" maxZ="105000 pc" minX="-105000 pc" minY="-105000 pc" minZ="-105000 pc" treeType="OctTree">
+            <policy type="TreePolicy">
+			  <SiteListTreePolicy maxLevel="99" minLevel="7" numExtraLevels="0" />
+            </policy>
+          </PolicyTreeSpatialGrid>
+        </grid>
+      </MediumSystem>
+    </mediumSystem>
+    <instrumentSystem type="InstrumentSystem">
+      <InstrumentSystem>
+        <defaultWavelengthGrid type="WavelengthGrid">
+          <LogWavelengthGrid maxWavelength="2000 micron" minWavelength="0.04 micron" numWavelengths="601" />
+        </defaultWavelengthGrid>
+        <instruments type="Instrument">
+          <FullInstrument azimuth="185.9233099864502 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="122.51886943511371 deg" instrumentName="broadband99" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="9.356726957787028 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="142.86557254929693 deg" instrumentName="broadband98" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="166.9244101808456 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="98.37732172252463 deg" instrumentName="broadband97" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="219.90909643860093 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="72.31481389388713 deg" instrumentName="broadband96" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="182.3656877469634 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="56.6804210784567 deg" instrumentName="broadband95" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="304.0550667861272 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="91.02311647035965 deg" instrumentName="broadband94" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="288.06984352766614 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="33.28788172690068 deg" instrumentName="broadband93" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="279.7246223993208 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="91.43222059630043 deg" instrumentName="broadband92" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="53.16405003465667 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="42.13369869761549 deg" instrumentName="broadband91" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="98.70816221053214 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="66.2980610425414 deg" instrumentName="broadband90" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="329.1224728534959 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="108.52954249082235 deg" instrumentName="broadband89" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="85.5203857837915 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="48.28344253057749 deg" instrumentName="broadband88" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="224.08725238094564 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="169.57775766909322 deg" instrumentName="broadband87" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="91.77770726577184 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="122.1576448034798 deg" instrumentName="broadband86" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="114.9221714942161 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="67.93938012708288 deg" instrumentName="broadband85" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="103.06933438717732 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="93.92393463632769 deg" instrumentName="broadband84" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="330.8641789682054 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="56.277575213416924 deg" instrumentName="broadband83" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="256.0862846087311 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="14.822364416826298 deg" instrumentName="broadband82" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="349.819619716765 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="82.23914744223246 deg" instrumentName="broadband81" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="317.14532924511997 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="63.86050269173214 deg" instrumentName="broadband80" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="136.6889301134422 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="69.09362888211588 deg" instrumentName="broadband79" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="191.8247296840724 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="69.40500310658437 deg" instrumentName="broadband78" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="146.75655108846007 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="97.49274218638845 deg" instrumentName="broadband77" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="101.82391305083762 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="115.92239408582182 deg" instrumentName="broadband76" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="4.259971699737317 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="87.3172478469294 deg" instrumentName="broadband75" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="222.58463315991685 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="50.09911188417672 deg" instrumentName="broadband74" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="193.91662923242362 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="52.75291839548193 deg" instrumentName="broadband73" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="51.949777362793775 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="45.39419448476363 deg" instrumentName="broadband72" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="140.85161633565374 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="125.95484675368587 deg" instrumentName="broadband71" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="270.8626818077599 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="102.49543102974818 deg" instrumentName="broadband70" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="80.78342164149353 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="134.71786423477474 deg" instrumentName="broadband69" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="301.46516080386795 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="37.84322574499045 deg" instrumentName="broadband68" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="56.46082203123038 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="69.7738531879881 deg" instrumentName="broadband67" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="32.035847091431236 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="86.23609427908816 deg" instrumentName="broadband66" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="178.50752836190688 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="21.049760799378102 deg" instrumentName="broadband65" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="357.2278948439917 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="30.424702465554468 deg" instrumentName="broadband64" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="190.05631615868552 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="86.63619415768785 deg" instrumentName="broadband63" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="334.25780389696024 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="91.81503834039756 deg" instrumentName="broadband62" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="333.65693750952335 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="82.39928511825403 deg" instrumentName="broadband61" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="334.3870447666538 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="81.7733392662798 deg" instrumentName="broadband60" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="249.0338253307163 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="62.19791405446517 deg" instrumentName="broadband59" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="146.0403122716743 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="45.40833001242516 deg" instrumentName="broadband58" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="253.88688990097725 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="47.46083047342257 deg" instrumentName="broadband57" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="231.0441409498274 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="65.20750945613882 deg" instrumentName="broadband56" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="143.92949297133933 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="83.40119155577834 deg" instrumentName="broadband55" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="11.9179808981984 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="131.83821920942398 deg" instrumentName="broadband54" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="190.52968208579105 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="102.41915632200204 deg" instrumentName="broadband53" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="241.48188225214287 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="144.9080107691857 deg" instrumentName="broadband52" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="153.17698408662332 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="129.91105993736952 deg" instrumentName="broadband51" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="108.3365513992621 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="108.69541100862115 deg" instrumentName="broadband50" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="248.78526399379942 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="62.39808394948576 deg" instrumentName="broadband49" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="136.38547353217652 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="25.435062902102697 deg" instrumentName="broadband48" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="157.95089463700583 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="44.266347042288814 deg" instrumentName="broadband47" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="327.5053763036234 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="144.69367471501207 deg" instrumentName="broadband46" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="232.1344666418099 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="54.70245639909524 deg" instrumentName="broadband45" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="150.0277189778182 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="103.48843801881907 deg" instrumentName="broadband44" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="33.860419681066304 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="91.86262231105266 deg" instrumentName="broadband43" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="134.9222391195556 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="63.48846933298264 deg" instrumentName="broadband42" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="98.69110605195783 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="98.31951752002179 deg" instrumentName="broadband41" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="99.72440583695403 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="125.60694402987414 deg" instrumentName="broadband40" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="79.56681473008935 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="118.11783279761906 deg" instrumentName="broadband39" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="130.8983150837938 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="145.47651297789054 deg" instrumentName="broadband38" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="23.639345591388295 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="68.47254699737329 deg" instrumentName="broadband37" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="115.39156350175828 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="24.23124122648805 deg" instrumentName="broadband36" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="126.92806169526001 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="175.74757997995928 deg" instrumentName="broadband35" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="314.35938430829754 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="136.9203064706309 deg" instrumentName="broadband34" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="153.7755002399277 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="122.35440298282249 deg" instrumentName="broadband33" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="5.907139394434124 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="100.94130927458585 deg" instrumentName="broadband32" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="245.96267732901427 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="49.56874466518093 deg" instrumentName="broadband31" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="302.11102848907905 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="57.21796820596593 deg" instrumentName="broadband30" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="347.67053082018447 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="104.428320755046 deg" instrumentName="broadband29" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="21.580942863569827 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="151.50955317002735 deg" instrumentName="broadband28" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="60.0910634687731 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="137.79187888058254 deg" instrumentName="broadband27" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="160.84851062767274 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="29.169522008435884 deg" instrumentName="broadband26" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="151.9094114381402 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="55.908083552840836 deg" instrumentName="broadband25" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="247.66003870975453 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="98.44362495024485 deg" instrumentName="broadband24" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="343.29903073458 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="138.22359928713922 deg" instrumentName="broadband23" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="36.1041738567362 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="81.28766671182024 deg" instrumentName="broadband22" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="146.5971987361164 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="106.71006703471872 deg" instrumentName="broadband21" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="79.06039252599818 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="26.063674535425296 deg" instrumentName="broadband20" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="341.1570363556322 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="112.00210936318743 deg" instrumentName="broadband19" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="72.21072878850255 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="152.8941839991182 deg" instrumentName="broadband18" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="321.8567805312469 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="74.42351998688626 deg" instrumentName="broadband17" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="101.04452192971705 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="25.240139719187805 deg" instrumentName="broadband16" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="290.677556847174 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="51.78852970301665 deg" instrumentName="broadband15" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="22.675661216433713 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="76.65527153817573 deg" instrumentName="broadband14" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="266.03747675534856 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="81.32989150125529 deg" instrumentName="broadband13" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="307.8732984041927 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="137.5238271018047 deg" instrumentName="broadband12" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="354.0304304202807 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="40.217772448990054 deg" instrumentName="broadband11" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="76.2417406648345 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="59.93477733018465 deg" instrumentName="broadband10" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="42.52025295703846 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="72.3093647774038 deg" instrumentName="broadband9" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="131.80737427807088 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="90.45270588783964 deg" instrumentName="broadband8" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="87.50880165580509 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="69.23106552096924 deg" instrumentName="broadband7" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="290.71861524953613 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="10.961877016777002 deg" instrumentName="broadband6" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="119.52876424124821 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="57.56841039586669 deg" instrumentName="broadband5" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="20.878646814565272 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="103.0069076848427 deg" instrumentName="broadband4" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="176.5446614806465 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="104.44687002510403 deg" instrumentName="broadband3" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="294.6260670880789 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="17.018345400785368 deg" instrumentName="broadband2" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="251.05614688176198 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="53.15720823552607 deg" instrumentName="broadband1" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <FullInstrument azimuth="0 deg" centerX="0 pc" centerY="0 pc" distance="100 Mpc" fieldOfViewX="210000 pc" fieldOfViewY="210000 pc" inclination="0 deg" instrumentName="broadband0" numPixelsX="250" numPixelsY="250" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg">
+          	<wavelengthGrid type="WavelengthGrid">
+            	<PredefinedBandWavelengthGrid include2MASS="true" includeGALEX="true" includeHERSCHEL="true" includeSDSS="true" includeWISE="true" />
+          	</wavelengthGrid>
+          </FullInstrument>
+          <SEDInstrument azimuth="0 deg" distance="100 Mpc" inclination="0 deg" instrumentName="SED0" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="251.05614688176198 deg" distance="100 Mpc" inclination="53.15720823552607 deg" instrumentName="SED1" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="294.6260670880789 deg" distance="100 Mpc" inclination="17.018345400785368 deg" instrumentName="SED2" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="176.5446614806465 deg" distance="100 Mpc" inclination="104.44687002510403 deg" instrumentName="SED3" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="20.878646814565272 deg" distance="100 Mpc" inclination="103.0069076848427 deg" instrumentName="SED4" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="119.52876424124821 deg" distance="100 Mpc" inclination="57.56841039586669 deg" instrumentName="SED5" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="290.71861524953613 deg" distance="100 Mpc" inclination="10.961877016777002 deg" instrumentName="SED6" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="87.50880165580509 deg" distance="100 Mpc" inclination="69.23106552096924 deg" instrumentName="SED7" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="131.80737427807088 deg" distance="100 Mpc" inclination="90.45270588783964 deg" instrumentName="SED8" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="42.52025295703846 deg" distance="100 Mpc" inclination="72.3093647774038 deg" instrumentName="SED9" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="76.2417406648345 deg" distance="100 Mpc" inclination="59.93477733018465 deg" instrumentName="SED10" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="354.0304304202807 deg" distance="100 Mpc" inclination="40.217772448990054 deg" instrumentName="SED11" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="307.8732984041927 deg" distance="100 Mpc" inclination="137.5238271018047 deg" instrumentName="SED12" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="266.03747675534856 deg" distance="100 Mpc" inclination="81.32989150125529 deg" instrumentName="SED13" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="22.675661216433713 deg" distance="100 Mpc" inclination="76.65527153817573 deg" instrumentName="SED14" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="290.677556847174 deg" distance="100 Mpc" inclination="51.78852970301665 deg" instrumentName="SED15" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="101.04452192971705 deg" distance="100 Mpc" inclination="25.240139719187805 deg" instrumentName="SED16" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="321.8567805312469 deg" distance="100 Mpc" inclination="74.42351998688626 deg" instrumentName="SED17" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="72.21072878850255 deg" distance="100 Mpc" inclination="152.8941839991182 deg" instrumentName="SED18" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="341.1570363556322 deg" distance="100 Mpc" inclination="112.00210936318743 deg" instrumentName="SED19" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="79.06039252599818 deg" distance="100 Mpc" inclination="26.063674535425296 deg" instrumentName="SED20" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="146.5971987361164 deg" distance="100 Mpc" inclination="106.71006703471872 deg" instrumentName="SED21" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="36.1041738567362 deg" distance="100 Mpc" inclination="81.28766671182024 deg" instrumentName="SED22" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="343.29903073458 deg" distance="100 Mpc" inclination="138.22359928713922 deg" instrumentName="SED23" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="247.66003870975453 deg" distance="100 Mpc" inclination="98.44362495024485 deg" instrumentName="SED24" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="151.9094114381402 deg" distance="100 Mpc" inclination="55.908083552840836 deg" instrumentName="SED25" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="160.84851062767274 deg" distance="100 Mpc" inclination="29.169522008435884 deg" instrumentName="SED26" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="60.0910634687731 deg" distance="100 Mpc" inclination="137.79187888058254 deg" instrumentName="SED27" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="21.580942863569827 deg" distance="100 Mpc" inclination="151.50955317002735 deg" instrumentName="SED28" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="347.67053082018447 deg" distance="100 Mpc" inclination="104.428320755046 deg" instrumentName="SED29" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="302.11102848907905 deg" distance="100 Mpc" inclination="57.21796820596593 deg" instrumentName="SED30" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="245.96267732901427 deg" distance="100 Mpc" inclination="49.56874466518093 deg" instrumentName="SED31" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="5.907139394434124 deg" distance="100 Mpc" inclination="100.94130927458585 deg" instrumentName="SED32" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="153.7755002399277 deg" distance="100 Mpc" inclination="122.35440298282249 deg" instrumentName="SED33" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="314.35938430829754 deg" distance="100 Mpc" inclination="136.9203064706309 deg" instrumentName="SED34" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="126.92806169526001 deg" distance="100 Mpc" inclination="175.74757997995928 deg" instrumentName="SED35" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="115.39156350175828 deg" distance="100 Mpc" inclination="24.23124122648805 deg" instrumentName="SED36" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="23.639345591388295 deg" distance="100 Mpc" inclination="68.47254699737329 deg" instrumentName="SED37" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="130.8983150837938 deg" distance="100 Mpc" inclination="145.47651297789054 deg" instrumentName="SED38" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="79.56681473008935 deg" distance="100 Mpc" inclination="118.11783279761906 deg" instrumentName="SED39" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="99.72440583695403 deg" distance="100 Mpc" inclination="125.60694402987414 deg" instrumentName="SED40" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="98.69110605195783 deg" distance="100 Mpc" inclination="98.31951752002179 deg" instrumentName="SED41" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="134.9222391195556 deg" distance="100 Mpc" inclination="63.48846933298264 deg" instrumentName="SED42" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="33.860419681066304 deg" distance="100 Mpc" inclination="91.86262231105266 deg" instrumentName="SED43" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="150.0277189778182 deg" distance="100 Mpc" inclination="103.48843801881907 deg" instrumentName="SED44" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="232.1344666418099 deg" distance="100 Mpc" inclination="54.70245639909524 deg" instrumentName="SED45" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="327.5053763036234 deg" distance="100 Mpc" inclination="144.69367471501207 deg" instrumentName="SED46" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="157.95089463700583 deg" distance="100 Mpc" inclination="44.266347042288814 deg" instrumentName="SED47" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="136.38547353217652 deg" distance="100 Mpc" inclination="25.435062902102697 deg" instrumentName="SED48" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="248.78526399379942 deg" distance="100 Mpc" inclination="62.39808394948576 deg" instrumentName="SED49" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="108.3365513992621 deg" distance="100 Mpc" inclination="108.69541100862115 deg" instrumentName="SED50" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="153.17698408662332 deg" distance="100 Mpc" inclination="129.91105993736952 deg" instrumentName="SED51" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="241.48188225214287 deg" distance="100 Mpc" inclination="144.9080107691857 deg" instrumentName="SED52" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="190.52968208579105 deg" distance="100 Mpc" inclination="102.41915632200204 deg" instrumentName="SED53" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="11.9179808981984 deg" distance="100 Mpc" inclination="131.83821920942398 deg" instrumentName="SED54" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="143.92949297133933 deg" distance="100 Mpc" inclination="83.40119155577834 deg" instrumentName="SED55" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="231.0441409498274 deg" distance="100 Mpc" inclination="65.20750945613882 deg" instrumentName="SED56" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="253.88688990097725 deg" distance="100 Mpc" inclination="47.46083047342257 deg" instrumentName="SED57" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="146.0403122716743 deg" distance="100 Mpc" inclination="45.40833001242516 deg" instrumentName="SED58" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="249.0338253307163 deg" distance="100 Mpc" inclination="62.19791405446517 deg" instrumentName="SED59" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="334.3870447666538 deg" distance="100 Mpc" inclination="81.7733392662798 deg" instrumentName="SED60" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="333.65693750952335 deg" distance="100 Mpc" inclination="82.39928511825403 deg" instrumentName="SED61" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="334.25780389696024 deg" distance="100 Mpc" inclination="91.81503834039756 deg" instrumentName="SED62" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="190.05631615868552 deg" distance="100 Mpc" inclination="86.63619415768785 deg" instrumentName="SED63" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="357.2278948439917 deg" distance="100 Mpc" inclination="30.424702465554468 deg" instrumentName="SED64" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="178.50752836190688 deg" distance="100 Mpc" inclination="21.049760799378102 deg" instrumentName="SED65" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="32.035847091431236 deg" distance="100 Mpc" inclination="86.23609427908816 deg" instrumentName="SED66" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="56.46082203123038 deg" distance="100 Mpc" inclination="69.7738531879881 deg" instrumentName="SED67" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="301.46516080386795 deg" distance="100 Mpc" inclination="37.84322574499045 deg" instrumentName="SED68" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="80.78342164149353 deg" distance="100 Mpc" inclination="134.71786423477474 deg" instrumentName="SED69" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="270.8626818077599 deg" distance="100 Mpc" inclination="102.49543102974818 deg" instrumentName="SED70" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="140.85161633565374 deg" distance="100 Mpc" inclination="125.95484675368587 deg" instrumentName="SED71" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="51.949777362793775 deg" distance="100 Mpc" inclination="45.39419448476363 deg" instrumentName="SED72" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="193.91662923242362 deg" distance="100 Mpc" inclination="52.75291839548193 deg" instrumentName="SED73" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="222.58463315991685 deg" distance="100 Mpc" inclination="50.09911188417672 deg" instrumentName="SED74" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="4.259971699737317 deg" distance="100 Mpc" inclination="87.3172478469294 deg" instrumentName="SED75" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="101.82391305083762 deg" distance="100 Mpc" inclination="115.92239408582182 deg" instrumentName="SED76" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="146.75655108846007 deg" distance="100 Mpc" inclination="97.49274218638845 deg" instrumentName="SED77" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="191.8247296840724 deg" distance="100 Mpc" inclination="69.40500310658437 deg" instrumentName="SED78" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="136.6889301134422 deg" distance="100 Mpc" inclination="69.09362888211588 deg" instrumentName="SED79" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="317.14532924511997 deg" distance="100 Mpc" inclination="63.86050269173214 deg" instrumentName="SED80" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="349.819619716765 deg" distance="100 Mpc" inclination="82.23914744223246 deg" instrumentName="SED81" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="256.0862846087311 deg" distance="100 Mpc" inclination="14.822364416826298 deg" instrumentName="SED82" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="330.8641789682054 deg" distance="100 Mpc" inclination="56.277575213416924 deg" instrumentName="SED83" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="103.06933438717732 deg" distance="100 Mpc" inclination="93.92393463632769 deg" instrumentName="SED84" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="114.9221714942161 deg" distance="100 Mpc" inclination="67.93938012708288 deg" instrumentName="SED85" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="91.77770726577184 deg" distance="100 Mpc" inclination="122.1576448034798 deg" instrumentName="SED86" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="224.08725238094564 deg" distance="100 Mpc" inclination="169.57775766909322 deg" instrumentName="SED87" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="85.5203857837915 deg" distance="100 Mpc" inclination="48.28344253057749 deg" instrumentName="SED88" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="329.1224728534959 deg" distance="100 Mpc" inclination="108.52954249082235 deg" instrumentName="SED89" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="98.70816221053214 deg" distance="100 Mpc" inclination="66.2980610425414 deg" instrumentName="SED90" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="53.16405003465667 deg" distance="100 Mpc" inclination="42.13369869761549 deg" instrumentName="SED91" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="279.7246223993208 deg" distance="100 Mpc" inclination="91.43222059630043 deg" instrumentName="SED92" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="288.06984352766614 deg" distance="100 Mpc" inclination="33.28788172690068 deg" instrumentName="SED93" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="304.0550667861272 deg" distance="100 Mpc" inclination="91.02311647035965 deg" instrumentName="SED94" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="182.3656877469634 deg" distance="100 Mpc" inclination="56.6804210784567 deg" instrumentName="SED95" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="219.90909643860093 deg" distance="100 Mpc" inclination="72.31481389388713 deg" instrumentName="SED96" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="166.9244101808456 deg" distance="100 Mpc" inclination="98.37732172252463 deg" instrumentName="SED97" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="9.356726957787028 deg" distance="100 Mpc" inclination="142.86557254929693 deg" instrumentName="SED98" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+          <SEDInstrument azimuth="185.9233099864502 deg" distance="100 Mpc" inclination="122.51886943511371 deg" instrumentName="SED99" numScatteringLevels="0" recordComponents="false" recordPolarization="false" recordStatistics="false" roll="0 deg" />
+        </instruments>
+      </InstrumentSystem>
+    </instrumentSystem>
+    <probeSystem type="ProbeSystem">
+      <ProbeSystem>
+      	<probes type="Probe">
+      		<SpatialGridConvergenceProbe probeName="spatial_convergence" wavelength="0.55 micron" />
+      		<DefaultMediaDensityCutsProbe probeName="media_density_cuts" />
+      	</probes>
+      </ProbeSystem>
+    </probeSystem>
+  </MonteCarloSimulation>
+</skirt-simulation-hierarchy>
