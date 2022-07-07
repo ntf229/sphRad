@@ -9,7 +9,7 @@
 #SBATCH --mail-type=END
 #SBATCH --output=slurm_out/slurm_%x.out
 #SBATCH --mail-user=ntf229@nyu.edu
-#SBATCH --array=51
+#SBATCH --array=1-65
 
 module purge
 

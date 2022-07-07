@@ -77,7 +77,6 @@ if os.path.isfile(SKIRTPath+'sph_broadband_total.fits'):
 else:
     print('Generating dust SKIRT SED')
     os.system('mkdir -p '+SKIRTPath)
-    os.system('touch '+SKIRTPath+'starburst99.txt') # create empty text file
     # copy dust and radiation text files to SKIRT directory
     os.system('cp '+textPath+'gas.txt '+SKIRTPath+'gas.txt')
     os.system('cp '+textPath+'stars.txt '+SKIRTPath+'stars.txt')
@@ -111,7 +110,6 @@ else:
     os.system('rm stars.txt')
     os.system('rm gas.txt')
     os.system('rm youngStars.txt')
-    os.system('rm starburst99.txt')
 
 # No dust
 if os.path.isfile(noDustSKIRTPath+'sph_broadband_total.fits'):
@@ -122,25 +120,20 @@ else:
     os.system('touch '+noDustSKIRTPath+'gas.txt') # create empty text file
     # copy stars text files to SKIRT directory
     os.system('cp '+textPath+'stars.txt '+noDustSKIRTPath+'stars.txt')
-    os.system('touch '+noDustSKIRTPath+'youngStars.txt') # create empty text file
     if eval(args.SF):
-        os.system('cp '+textPath+'starburst99.txt '+noDustSKIRTPath+'starburst99.txt')
+        os.system('cp '+textPath+'youngStars_f_PDR0.txt '+noDustSKIRTPath+'youngStars.txt')
     else:
-        os.system('touch '+noDustSKIRTPath+'starburst99.txt') # create empty text file
+        os.system('touch '+noDustSKIRTPath+'youngStars.txt') # create empty text file
     # move ski file to SKIRT directory
     os.system('cp '+codePath+'resources/sph_template.ski '+noDustSKIRTPath+'sph.ski')
     
     # calculate size of galaxy image from text files
-    gas = np.loadtxt(textPath+'gas.txt')
-    stars = np.loadtxt(textPath+'stars.txt')
+    stars = np.loadtxt(noDustSKIRTPath+'stars.txt')
     
-    xLengthGas = (np.amax(gas[:,0]) - np.amin(gas[:,0]))
-    yLengthGas = (np.amax(gas[:,1]) - np.amin(gas[:,1]))
-    zLengthGas = (np.amax(gas[:,2]) - np.amin(gas[:,2]))
     xLengthStars = (np.amax(stars[:,0]) - np.amin(stars[:,0]))
     yLengthStars = (np.amax(stars[:,1]) - np.amin(stars[:,1]))
     zLengthStars = (np.amax(stars[:,2]) - np.amin(stars[:,2]))
-    maxLength = np.amax([xLengthGas, yLengthGas, zLengthGas, xLengthStars, yLengthStars, zLengthStars])
+    maxLength = np.amax([xLengthStars, yLengthStars, zLengthStars])
     
     # change values in newly created .ski file to argparse values
     os.system('python '+codePath+'python/modify_ski.py --filePath='+noDustSKIRTPath+'sph.ski --inc='+args.inc+' --az='+args.az+' --numPhotons='+args.numPhotons+' --pixels='+args.pixels+' --size='+str(maxLength)+' --dustFraction='+args.dustFraction+' --maxTemp='+args.maxTemp+' --SSP='+args.SSP)
@@ -154,7 +147,6 @@ else:
     os.system('rm stars.txt')
     os.system('rm gas.txt')
     os.system('rm youngStars.txt')
-    os.system('rm starburst99.txt')
 
 end = timer()
 time_SKIRT = end - start

@@ -3,8 +3,8 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=1
-#SBATCH --time=2:00:00
-#SBATCH --mem=10GB
+#SBATCH --time=20:00
+#SBATCH --mem=40GB
 #SBATCH --job-name=analysis
 #SBATCH --mail-type=END
 #SBATCH --output=slurm_out/slurm_%x.out
@@ -19,7 +19,7 @@ singularity exec --overlay overlay-15GB-500K.ext3:ro \
 /bin/bash -c "source /ext3/env.sh; 
 python /home/ntf229/sphRad/bin/analysis.py \
 --ageSmooth=True --SF=True --tauClear=2 --clumps=False --numCells=8 --numClumps=34 \
---inc=0 --az=0 --dust=True --numPhotons=1e9 --pixels=2000 \
+--inc=0 --az=0 --numPhotons=1e9 --pixels=2000 \
 --dustFraction=0.1 --SSP=FSPS_Chabrier --maxTemp=16000"
 
 

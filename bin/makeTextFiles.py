@@ -318,17 +318,6 @@ class galaxy:
         self.young_logC = []
         self.young_p = []
         self.young_f_PDR = []
-        # starburst99 arrays
-        self.sb99_x_pos = []
-        self.sb99_y_pos = []
-        self.sb99_z_pos = []
-        self.sb99_smooth = []
-        self.sb99_x_vel = []
-        self.sb99_y_vel = []
-        self.sb99_z_vel = []
-        self.sb99_mass = []
-        self.sb99_metals = []
-        self.sb99_age = []
         def mass_prob(x): # star cluster mass probability distribution
             return x**(-1.8)
         mass_min = 700
@@ -362,17 +351,6 @@ class galaxy:
             self.young_logC.append(np.random.normal(5., 0.4))
             self.young_p.append(k*10**((5/2)*(self.young_logC[ind]-(3/5)*np.log10(np.random.choice(sampled_masses))))) # in kg cm**-1 s**-2
             self.young_p[ind] *= 100 # convert to Pascals
-            # create starburst99 particle
-            self.sb99_x_pos.append(self.x_pos[parent_index])
-            self.sb99_y_pos.append(self.y_pos[parent_index])
-            self.sb99_z_pos.append(self.z_pos[parent_index])
-            self.sb99_smooth.append(self.smooth[parent_index])
-            self.sb99_x_vel.append(self.x_vel[parent_index])
-            self.sb99_y_vel.append(self.y_vel[parent_index])
-            self.sb99_z_vel.append(self.z_vel[parent_index])
-            self.sb99_mass.append(self.mass[parent_index])
-            self.sb99_metals.append(self.metals[parent_index])
-            self.sb99_age.append(self.age[parent_index])
             # create ghost particle
             self.x_pos_dust = np.append(self.x_pos_dust, self.x_pos[parent_index])
             self.y_pos_dust = np.append(self.y_pos_dust, self.y_pos[parent_index])
@@ -398,17 +376,7 @@ class galaxy:
         self.young_logC = np.asarray(self.young_logC)
         self.young_p = np.asarray(self.young_p)
         self.young_f_PDR = np.asarray(self.young_f_PDR)
-        # change starburst99 from lists to numpy arrays
-        self.sb99_x_pos = np.asarray(self.sb99_x_pos)
-        self.sb99_y_pos = np.asarray(self.sb99_y_pos)
-        self.sb99_z_pos = np.asarray(self.sb99_z_pos)
-        self.sb99_smooth = np.asarray(self.sb99_smooth)
-        self.sb99_x_vel = np.asarray(self.sb99_x_vel)
-        self.sb99_y_vel = np.asarray(self.sb99_y_vel)
-        self.sb99_z_vel = np.asarray(self.sb99_z_vel)
-        self.sb99_mass = np.asarray(self.sb99_mass)
-        self.sb99_metals = np.asarray(self.sb99_metals)
-        self.sb99_age = np.asarray(self.sb99_age)
+        self.young_f_PDR0 = np.zeros(len(self.young_f_PDR)) # for unattenuated SEDs
         # delete parent particles
         self.x_pos = np.delete(self.x_pos, youngStarIndex)
         self.y_pos = np.delete(self.y_pos, youngStarIndex)
@@ -500,9 +468,7 @@ class galaxy:
             self.ag_x, self.ag_y, self.ag_z, self.ag_h, self.ag_M, self.ag_Z, self.ag_T = np.array(aglist).T
 
 if __name__=='__main__':
-    
     start = timer()
-    
     parser = argparse.ArgumentParser()
     parser.add_argument("--ageSmooth") # if True, smooth ages based on number of star particles (see galaxy.youngStars()) 
     parser.add_argument("--SF") # if True, star particles younger than 10 Myrs are assigned MAPPINGS-III SEDs
@@ -512,7 +478,6 @@ if __name__=='__main__':
     parser.add_argument("--numClumps") # number of clumps for subgrid clumping (only matters if clumps=True)
     parser.add_argument("--galaxy") # name of galaxy 
     args = parser.parse_args()
-
     # Directory structure stores important parameters
     textPath = '/scratch/ntf229/sphRad/resources/NIHAO/TextFiles/'
     if eval(args.ageSmooth):
@@ -527,18 +492,12 @@ if __name__=='__main__':
         textPath += 'clumps/numCells'+args.numCells+'/numClumps'+args.numClumps+'/'
     else:
         textPath += 'noClumps/'
-
     textPath += args.galaxy+'/'
-
     os.system('mkdir -p '+textPath)
-
     star_header = 'Column 1: position x (pc)\nColumn 2: position y (pc)\nColumn 3: position z (pc)\nColumn 4: smoothing length (pc)\nColumn 5: v_x (km/s)\nColumn 6: v_y (km/s)\nColumn 7: v_z (km/s)\nColumn 8: mass (Msun)\nColumn 9: metallicity ()\nColumn 10: age (yr)'
     gas_header = 'Column 1: position x (pc)\nColumn 2: position y (pc)\nColumn 3: position z (pc)\nColumn 4: smoothing length (pc)\nColumn 5: mass (Msun)\nColumn 6: metallicity ()\nColumn 7: temperature (K)'
-        
-    
     print('starting ', args.galaxy)
     g = galaxy(args.galaxy)
-    
     g.starCut()
     g.dustCut()
     g.shift()
@@ -547,6 +506,8 @@ if __name__=='__main__':
     print('stellar mass before MAPPINGSIII:', np.sum(g.mass))
     if eval(args.SF):
         g.youngStars(args.tauClear)
+        np.savetxt(textPath+'youngStars.txt',np.float32(np.c_[g.young_x_pos, g.young_y_pos, g.young_z_pos, g.young_smooth, g.young_x_vel, g.young_y_vel, g.young_z_vel, g.young_SFR, g.young_metals, g.young_logC, g.young_p, g.young_f_PDR]))
+        np.savetxt(textPath+'youngStars_f_PDR0.txt',np.float32(np.c_[g.young_x_pos, g.young_y_pos, g.young_z_pos, g.young_smooth, g.young_x_vel, g.young_y_vel, g.young_z_vel, g.young_SFR, g.young_metals, g.young_logC, g.young_p, g.young_f_PDR0]))
     print('FSPS stellar mass:', np.sum(g.mass))
     print('MAPPINGSIII stellar mass:', np.sum(g.young_mass))
     if eval(args.clumps):
@@ -556,15 +517,9 @@ if __name__=='__main__':
         np.savetxt(textPath+'gas.txt',np.float32(np.c_[g.ag_x, g.ag_y, g.ag_z, g.ag_h, g.ag_M, g.ag_Z, g.ag_T]),header=gas_header)
     else:
         np.savetxt(textPath+'gas.txt',np.float32(np.c_[g.x_pos_dust, g.y_pos_dust, g.z_pos_dust, g.smooth_dust, g.mass_dust, g.metals_dust, g.temp_dust]), header=gas_header)
-    
     np.savetxt(textPath+'stars.txt',np.float32(np.c_[g.x_pos, g.y_pos, g.z_pos, g.smooth, g.x_vel, g.y_vel, g.z_vel, g.mass, g.metals, g.age]), header=star_header)
-    if eval(args.SF):
-        np.savetxt(textPath+'youngStars.txt',np.float32(np.c_[g.young_x_pos, g.young_y_pos, g.young_z_pos, g.young_smooth, g.young_x_vel, g.young_y_vel, g.young_z_vel, g.young_SFR, g.young_metals, g.young_logC, g.young_p, g.young_f_PDR]))
-        np.savetxt(textPath+'starburst99.txt',np.float32(np.c_[g.sb99_x_pos, g.sb99_y_pos, g.sb99_z_pos, g.sb99_smooth, g.sb99_x_vel, g.sb99_y_vel, g.sb99_z_vel, g.sb99_mass, g.sb99_metals, g.sb99_age]), header=star_header)
-    
     np.savetxt(textPath+'current_mass_stars.txt',np.float32(np.c_[g.current_mass]))
     np.savetxt(textPath+'gas_density.txt',np.float32(np.c_[g.density_dust]))
-    
     end = timer()
     print('time: ', end - start)
 
