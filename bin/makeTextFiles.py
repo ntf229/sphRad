@@ -356,7 +356,7 @@ class galaxy:
             self.y_pos_dust = np.append(self.y_pos_dust, self.y_pos[parent_index])
             self.z_pos_dust = np.append(self.z_pos_dust, self.z_pos[parent_index])
             self.smooth_dust = np.append(self.smooth_dust, 3*self.smooth[parent_index]) # 3 times smoothing length of parent star
-            self.mass_dust = np.append(self.mass_dust, -10.*self.young_mass[ind]*self.young_f_PDR[ind]) # 10 times larger negative mass in PDR 
+            self.mass_dust = np.append(self.mass_dust, -100.*self.young_mass[ind]*self.young_f_PDR[ind]) # 100 times negative mass in PDR (1% SF efficiency) 
             self.metals_dust = np.append(self.metals_dust, self.metals[parent_index]) 
             self.temp_dust = np.append(self.temp_dust, 7000.) # assume 7000K (doesn't make a difference as long as lower than maxTemp)
             self.density_dust = np.append(self.density_dust, 0.) # don't need density, set to 0
@@ -503,13 +503,10 @@ if __name__=='__main__':
     g.shift()
     if eval(args.ageSmooth):
         g.ageSmooth()
-    print('stellar mass before MAPPINGSIII:', np.sum(g.mass))
     if eval(args.SF):
         g.youngStars(args.tauClear)
         np.savetxt(textPath+'youngStars.txt',np.float32(np.c_[g.young_x_pos, g.young_y_pos, g.young_z_pos, g.young_smooth, g.young_x_vel, g.young_y_vel, g.young_z_vel, g.young_SFR, g.young_metals, g.young_logC, g.young_p, g.young_f_PDR]))
         np.savetxt(textPath+'youngStars_f_PDR0.txt',np.float32(np.c_[g.young_x_pos, g.young_y_pos, g.young_z_pos, g.young_smooth, g.young_x_vel, g.young_y_vel, g.young_z_vel, g.young_SFR, g.young_metals, g.young_logC, g.young_p, g.young_f_PDR0]))
-    print('FSPS stellar mass:', np.sum(g.mass))
-    print('MAPPINGSIII stellar mass:', np.sum(g.young_mass))
     if eval(args.clumps):
         g.clumps(args.numCells, args.numClumps)
         print('gas mass after clumps:', np.sum(g.ag_M))

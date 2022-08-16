@@ -52,23 +52,28 @@ else:
     SKIRTPath += 'noSF/'
     noDustSKIRTPath += 'noSF/'
     plotPath += 'noSF/'
-if eval(args.clumps):
-    textPath += 'clumps/numCells'+args.numCells+'/numClumps'+args.numClumps+'/'
-    SKIRTPath += 'clumps/numCells'+args.numCells+'/numClumps'+args.numClumps+'/'
-    noDustSKIRTPath += 'clumps/numCells'+args.numCells+'/numClumps'+args.numClumps+'/'
-    plotPath += 'clumps/numCells'+args.numCells+'/numClumps'+args.numClumps+'/'
-else:
-    textPath += 'noClumps/'
-    SKIRTPath += 'noClumps/'
-    noDustSKIRTPath += 'noClumps/'
-    plotPath += 'noClumps/'
-
 noDustPlotPath = plotPath
-
 SKIRTPath += 'dust/dustFraction'+args.dustFraction+'/maxTemp'+args.maxTemp+'/'
 plotPath += 'dust/dustFraction'+args.dustFraction+'/maxTemp'+args.maxTemp+'/'
 noDustSKIRTPath += 'noDust/'
 noDustPlotPath += 'noDust/'
+if eval(args.clumps):
+    textPath += 'clumps/numCells'+args.numCells+'/numClumps'+args.numClumps+'/'
+    SKIRTPath += 'clumps/numCells'+args.numCells+'/numClumps'+args.numClumps+'/'
+    #noDustSKIRTPath += 'clumps/numCells'+args.numCells+'/numClumps'+args.numClumps+'/'
+    plotPath += 'clumps/numCells'+args.numCells+'/numClumps'+args.numClumps+'/'
+else:
+    textPath += 'noClumps/'
+    SKIRTPath += 'noClumps/'
+    #noDustSKIRTPath += 'noClumps/'
+    plotPath += 'noClumps/'
+
+#noDustPlotPath = plotPath
+
+#SKIRTPath += 'dust/dustFraction'+args.dustFraction+'/maxTemp'+args.maxTemp+'/'
+#plotPath += 'dust/dustFraction'+args.dustFraction+'/maxTemp'+args.maxTemp+'/'
+#noDustSKIRTPath += 'noDust/'
+#noDustPlotPath += 'noDust/'
 
 SKIRTPath += 'numPhotons'+args.numPhotons+'/inc'+args.inc+'/az'+args.az+'/'+args.SSP+'/'
 plotPath += 'numPhotons'+args.numPhotons+'/inc'+args.inc+'/az'+args.az+'/'+args.SSP+'/'

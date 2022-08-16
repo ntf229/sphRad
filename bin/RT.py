@@ -53,23 +53,37 @@ else:
 	textPath += 'noSF/'
 	SKIRTPath += 'noSF/'
 	noDustSKIRTPath += 'noSF/'
+SKIRTPath += 'dust/dustFraction'+args.dustFraction+'/maxTemp'+args.maxTemp+'/'
+noDustSKIRTPath += 'noDust/'
 if eval(args.clumps):
     textPath += 'clumps/numCells'+args.numCells+'/numClumps'+args.numClumps+'/'
     SKIRTPath += 'clumps/numCells'+args.numCells+'/numClumps'+args.numClumps+'/'
-    noDustSKIRTPath += 'clumps/numCells'+args.numCells+'/numClumps'+args.numClumps+'/'
+    #noDustSKIRTPath += 'clumps/numCells'+args.numCells+'/numClumps'+args.numClumps+'/'
 else:
 	textPath += 'noClumps/'
 	SKIRTPath += 'noClumps/'
-	noDustSKIRTPath += 'noClumps/'
+	#noDustSKIRTPath += 'noClumps/'
 
-SKIRTPath += 'dust/dustFraction'+args.dustFraction+'/maxTemp'+args.maxTemp+'/'
-noDustSKIRTPath += 'noDust/'
+#SKIRTPath += 'dust/dustFraction'+args.dustFraction+'/maxTemp'+args.maxTemp+'/'
+#noDustSKIRTPath += 'noDust/'
 
 textPath += args.galaxy+'/'
 SKIRTPath += 'numPhotons'+args.numPhotons+'/inc'+args.inc+'/az'+args.az+'/'+args.SSP+'/'+args.galaxy+'/'
 noDustSKIRTPath += 'numPhotons'+args.numPhotons+'/inc'+args.inc+'/az'+args.az+'/'+args.SSP+'/'+args.galaxy+'/'
 
 start = timer()
+
+# calculate size of galaxy image from text files
+gas = np.loadtxt(textPath+'gas.txt')
+stars = np.loadtxt(textPath+'stars.txt')
+
+xLengthGas = (np.amax(gas[:,0]) - np.amin(gas[:,0]))
+yLengthGas = (np.amax(gas[:,1]) - np.amin(gas[:,1]))
+zLengthGas = (np.amax(gas[:,2]) - np.amin(gas[:,2]))
+xLengthStars = (np.amax(stars[:,0]) - np.amin(stars[:,0]))
+yLengthStars = (np.amax(stars[:,1]) - np.amin(stars[:,1]))
+zLengthStars = (np.amax(stars[:,2]) - np.amin(stars[:,2]))
+maxLength = np.amax([xLengthGas, yLengthGas, zLengthGas, xLengthStars, yLengthStars, zLengthStars])
 
 # Including dust
 if os.path.isfile(SKIRTPath+'sph_broadband_total.fits'):
@@ -86,20 +100,14 @@ else:
         os.system('touch '+SKIRTPath+'youngStars.txt') # create empty text file
     # move ski file to SKIRT directory
     os.system('cp '+codePath+'resources/sph_template.ski '+SKIRTPath+'sph.ski')
-    # calculate size of galaxy image from text files
-    gas = np.loadtxt(textPath+'gas.txt')
-    stars = np.loadtxt(textPath+'stars.txt')
-    
-    xLengthGas = (np.amax(gas[:,0]) - np.amin(gas[:,0]))
-    yLengthGas = (np.amax(gas[:,1]) - np.amin(gas[:,1]))
-    zLengthGas = (np.amax(gas[:,2]) - np.amin(gas[:,2]))
-    xLengthStars = (np.amax(stars[:,0]) - np.amin(stars[:,0]))
-    yLengthStars = (np.amax(stars[:,1]) - np.amin(stars[:,1]))
-    zLengthStars = (np.amax(stars[:,2]) - np.amin(stars[:,2]))
-    maxLength = np.amax([xLengthGas, yLengthGas, zLengthGas, xLengthStars, yLengthStars, zLengthStars])
     
     # change values in newly created .ski file to argparse values
-    os.system('python '+codePath+'python/modify_ski.py --filePath='+SKIRTPath+'sph.ski --inc='+args.inc+' --az='+args.az+' --numPhotons='+args.numPhotons+' --pixels='+args.pixels+' --size='+str(maxLength)+' --dustFraction='+args.dustFraction+' --maxTemp='+args.maxTemp+' --SSP='+args.SSP)
+    os.system('python '+codePath+'python/modify_ski.py --filePath='+
+              SKIRTPath+'sph.ski --inc='+args.inc+' --az='+args.az+
+              ' --BBinstrument=broadband --SEDinstrument=SED'+
+              ' --numPhotons='+args.numPhotons+' --pixels='+args.pixels+
+              ' --size='+str(maxLength)+' --dustFraction='+args.dustFraction+
+              ' --maxTemp='+args.maxTemp+' --SSP='+args.SSP)
     
     # go to SKIRT directory and run, then cd back
     os.chdir(SKIRTPath)
@@ -126,14 +134,6 @@ else:
         os.system('touch '+noDustSKIRTPath+'youngStars.txt') # create empty text file
     # move ski file to SKIRT directory
     os.system('cp '+codePath+'resources/sph_template.ski '+noDustSKIRTPath+'sph.ski')
-    
-    # calculate size of galaxy image from text files
-    stars = np.loadtxt(noDustSKIRTPath+'stars.txt')
-    
-    xLengthStars = (np.amax(stars[:,0]) - np.amin(stars[:,0]))
-    yLengthStars = (np.amax(stars[:,1]) - np.amin(stars[:,1]))
-    zLengthStars = (np.amax(stars[:,2]) - np.amin(stars[:,2]))
-    maxLength = np.amax([xLengthStars, yLengthStars, zLengthStars])
     
     # change values in newly created .ski file to argparse values
     os.system('python '+codePath+'python/modify_ski.py --filePath='+noDustSKIRTPath+'sph.ski --inc='+args.inc+' --az='+args.az+' --numPhotons='+args.numPhotons+' --pixels='+args.pixels+' --size='+str(maxLength)+' --dustFraction='+args.dustFraction+' --maxTemp='+args.maxTemp+' --SSP='+args.SSP)
