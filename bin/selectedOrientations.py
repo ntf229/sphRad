@@ -35,43 +35,43 @@ resultPath = '/scratch/ntf229/sphRad/' # store results here
 selectedPath = resultPath+'resources/selectedOrientations/'
 
 # Directory structure stores important parameters
-textPath = resultPath+'resources/NIHAO/TextFiles/'
+particlePath = resultPath+'resources/NIHAO/Particles/'
 SKIRTPath = resultPath+'resources/selectedOrientations_SKIRT/'
 noDustSKIRTPath = resultPath+'resources/selectedOrientations_SKIRT/'
 if eval(args.ageSmooth):
-    textPath += 'ageSmooth/'
+    particlePath += 'ageSmooth/'
     SKIRTPath += 'ageSmooth/'
     noDustSKIRTPath += 'ageSmooth/'
 else:
-    textPath += 'noAgeSmooth/'
+    particlePath += 'noAgeSmooth/'
     SKIRTPath += 'noAgeSmooth/'
     noDustSKIRTPath += 'noAgeSmooth/'
 if eval(args.SF):
-    textPath += 'SF/tauClear'+args.tauClear+'/'
+    particlePath += 'SF/tauClear'+args.tauClear+'/'
     SKIRTPath += 'SF/tauClear'+args.tauClear+'/'
     noDustSKIRTPath += 'SF/tauClear'+args.tauClear+'/'
 else:
-    textPath += 'noSF/'
+    particlePath += 'noSF/'
     SKIRTPath += 'noSF/'
     noDustSKIRTPath += 'noSF/'
 SKIRTPath += 'dust/dustFraction'+args.dustFraction+'/maxTemp'+args.maxTemp+'/'
 noDustSKIRTPath += 'noDust/'
 if eval(args.clumps):
-    textPath += 'clumps/numCells'+args.numCells+'/numClumps'+args.numClumps+'/'
+    particlePath += 'clumps/numCells'+args.numCells+'/numClumps'+args.numClumps+'/'
     SKIRTPath += 'clumps/numCells'+args.numCells+'/numClumps'+args.numClumps+'/'
 else:
-    textPath += 'noClumps/'
+    particlePath += 'noClumps/'
     SKIRTPath += 'noClumps/'
 
-textPath += args.galaxy+'/'
+particlePath += args.galaxy+'/'
 SKIRTPath += 'numPhotons'+args.numPhotons+'/'+args.SSP+'/'+args.galaxy+'/'
 noDustSKIRTPath += 'numPhotons'+args.numPhotons+'/'+args.SSP+'/'+args.galaxy+'/'
 
 start = timer()
 
 # calculate size of galaxy image from text files
-stars = np.loadtxt(textPath+'stars.txt') 
-gas = np.loadtxt(textPath+'gas.txt')
+stars = np.load(particlePath+'stars.npy') 
+gas = np.load(particlePath+'gas.npy')
 xLengthStars = (np.amax(stars[:,0]) - np.amin(stars[:,0]))
 yLengthStars = (np.amax(stars[:,1]) - np.amin(stars[:,1]))
 zLengthStars = (np.amax(stars[:,2]) - np.amin(stars[:,2]))
@@ -93,11 +93,14 @@ if os.path.isfile(SKIRTPath+'sph_SED_'+instName+'_sed.dat'):
     print('skipping dust run')
 else:
     os.system('mkdir -p '+SKIRTPath)
-    # copy stars and gas text files to SKIRT directory
-    os.system('cp '+textPath+'gas.txt '+SKIRTPath+'gas.txt')
-    os.system('cp '+textPath+'stars.txt '+SKIRTPath+'stars.txt')
+    # save stars and gas text files in SKIRT directory
+    np.savetxt(SKIRTPath+'stars.txt', stars)
+    np.savetxt(SKIRTPath+'gas.txt', gas)
+    #os.system('cp '+textPath+'gas.txt '+SKIRTPath+'gas.txt')
+    #os.system('cp '+textPath+'stars.txt '+SKIRTPath+'stars.txt')
     if eval(args.SF):
-        os.system('cp '+textPath+'youngStars.txt '+SKIRTPath+'youngStars.txt')
+        #os.system('cp '+textPath+'youngStars.txt '+SKIRTPath+'youngStars.txt')
+        np.savetxt(SKIRTPath+'youngStars.txt', np.load(particlePath+'youngStars.npy'))
     else:
         os.system('touch '+SKIRTPath+'youngStars.txt') # create empty text file
     # move ski file to SKIRT directory
@@ -140,14 +143,16 @@ instName = 'axisRatio'+str(np.round_(selectedAxisRatio[0], decimals = 4))
 
 # no dust 
 if os.path.isfile(noDustSKIRTPath+'sph_SED_'+instName+'_sed.dat'):
-    print('skiping no dust run')
+    print('skipping no dust run')
 else:
     os.system('mkdir -p '+noDustSKIRTPath)
     os.system('touch '+noDustSKIRTPath+'gas.txt') # create empty text file
     # copy stars text files to SKIRT directory
-    os.system('cp '+textPath+'stars.txt '+noDustSKIRTPath+'stars.txt')
+    #os.system('cp '+textPath+'stars.txt '+noDustSKIRTPath+'stars.txt')
+    np.savetxt(noDustSKIRTPath+'stars.txt', stars)
     if eval(args.SF):
-        os.system('cp '+textPath+'youngStars_f_PDR0.txt '+noDustSKIRTPath+'youngStars.txt')
+        #os.system('cp '+textPath+'youngStars_f_PDR0.txt '+noDustSKIRTPath+'youngStars.txt')
+        np.savetxt(noDustSKIRTPath+'youngStars.txt', np.load(particlePath+'youngStars.npy'))
     else:
         os.system('touch '+noDustSKIRTPath+'youngStars.txt') # create empty text file
     # move ski file to SKIRT directory

@@ -1,0 +1,4 @@
+/home/ntf229/sphRad/bin/ageSmoothSFR.py:55: RuntimeWarning: divide by zero encountered in log10
+  plt.scatter(np.log10(noAgeSmoothStellarMass), np.log10(noAgeSmoothSFR/noAgeSmoothStellarMass), color='red', label='Original')
+loading masses and SFRs
+done

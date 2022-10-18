@@ -107,9 +107,8 @@ def plotAttenuationCurves(galaxy):
     plt.savefig(plotPath+'AttenuationCurves/'+galaxy+'/'+instName+'_attenuation.png', dpi=300)
     plt.close()
 
-def plotAllAttenuationCurves():
-    os.system('mkdir -p '+plotPath+'AllAttenuationCurves/')
-    plt.figure(figsize=(10,8))
+def getAvValues():
+    AvValues = np.zeros((len(galaxies), numOrientations))
     for i in range(len(galaxies)):
         for j in range(numOrientations):
             instName = 'axisRatio'+str(np.round_(SKIRT_axisRatio[i,j], decimals = 4))
@@ -123,17 +122,167 @@ def plotAllAttenuationCurves():
             noDustMags = 22.5 - 2.5*np.log10((noDustSpec/3631) * 1e9) # convert to Pogson magnitudes
             attenuation = dustMags[att_mask] - noDustMags[att_mask]
             Av_index = np.abs(wave[att_mask] - 5500).argmin() # find wave index closes to 5500 angstroms (V)
-            if attenuation[Av_index] < 0.001:
-                continue # don't plot orientations with small Av 
-            #plt.plot(wave[att_mask], attenuation, color='k', alpha=0.5, linewidth=0.2)
-            plt.plot(wave[att_mask], attenuation / attenuation[Av_index], color='k', alpha=0.5, linewidth=0.2)
+            AvValues[i,j] =  attenuation[Av_index]
+    return AvValues
+
+def plotAllAttenuationCurves():
+    os.system('mkdir -p '+plotPath+'AllAttenuationCurves/')
+    plt.figure(figsize=(10,8))
+    for i in range(len(galaxies)):
+        if not sphMassMask[i]:
+            continue
+        for j in range(numOrientations):
+            instName = 'axisRatio'+str(np.round_(SKIRT_axisRatio[i,j], decimals = 4))
+            sed = np.loadtxt(SKIRTPath+galaxies[i]+'/sph_SED_'+instName+'_sed.dat', unpack = True)
+            wave = sed[0] * 1e4 # spatially integrated SED wavelengths converted to Angstroms
+            spec = sed[1] # spatially integrated SED fluxes in Janskys
+            sed = np.loadtxt(noDustSKIRTPath+galaxies[i]+'/sph_SED_'+instName+'_sed.dat', unpack = True)
+            noDustSpec = sed[1] 
+            att_mask = (wave >= 912) & (wave <= 2e4)
+            dustMags = 22.5 - 2.5*np.log10((spec/3631) * 1e9) # convert to Pogson magnitudes
+            noDustMags = 22.5 - 2.5*np.log10((noDustSpec/3631) * 1e9) # convert to Pogson magnitudes
+            attenuation = dustMags[att_mask] - noDustMags[att_mask]
+            plt.plot(wave[att_mask], attenuation, color='k', alpha=0.5, linewidth=0.2)
     plt.xlabel(r'$\lambda$'+' ['+r'$\AA$'+']', fontsize=16)
-    plt.ylabel(r'$A_{\lambda} / A_{V}$',fontsize=16)
-    #plt.ylabel(r'$A_{\lambda}$',fontsize=16)
+    plt.ylabel(r'$A_{\lambda}$',fontsize=16)
     plt.xscale('log')
     plt.xticks(fontsize=16)
     plt.yticks(fontsize=16)
     plt.savefig(plotPath+'AllAttenuationCurves/attenuation.png', dpi=300)
+    plt.close()
+
+def plotAllAttenuationCurvesNorm():
+    os.system('mkdir -p '+plotPath+'AllAttenuationCurves/')
+    plt.figure(figsize=(10,8))
+    for i in range(len(galaxies)):
+        if not sphMassMask[i]:
+            continue  
+        for j in range(numOrientations):
+            instName = 'axisRatio'+str(np.round_(SKIRT_axisRatio[i,j], decimals = 4))
+            sed = np.loadtxt(SKIRTPath+galaxies[i]+'/sph_SED_'+instName+'_sed.dat', unpack = True)
+            wave = sed[0] * 1e4 # spatially integrated SED wavelengths converted to Angstroms
+            spec = sed[1] # spatially integrated SED fluxes in Janskys
+            sed = np.loadtxt(noDustSKIRTPath+galaxies[i]+'/sph_SED_'+instName+'_sed.dat', unpack = True)
+            noDustSpec = sed[1] 
+            att_mask = (wave >= 912) & (wave <= 2e4)
+            dustMags = 22.5 - 2.5*np.log10((spec/3631) * 1e9) # convert to Pogson magnitudes
+            noDustMags = 22.5 - 2.5*np.log10((noDustSpec/3631) * 1e9) # convert to Pogson magnitudes
+            attenuation = dustMags[att_mask] - noDustMags[att_mask]
+            plt.plot(wave[att_mask], attenuation / SKIRT_AvValues[i,j], color='k', alpha=0.5, linewidth=0.2)
+    plt.xlabel(r'$\lambda$'+' ['+r'$\AA$'+']', fontsize=16)
+    plt.ylabel(r'$A_{\lambda} / A_{V}$',fontsize=16)
+    plt.xscale('log')
+    plt.xticks(fontsize=16)
+    plt.yticks(fontsize=16)
+    plt.savefig(plotPath+'AllAttenuationCurves/normAttenuation.png', dpi=300)
+    plt.close()
+
+def plotEnergyBalance(exclude=True):
+    os.system('mkdir -p '+plotPath+'EnergyBalance/')
+    c = 2.998e18 # speed of light in Anstroms per second
+    plt.figure(figsize=(10,8))
+    for i in range(len(galaxies)):
+        if exclude:
+            if not sphMassMask[i]:
+                continue  
+        for j in range(numOrientations):
+            instName = 'axisRatio'+str(np.round_(SKIRT_axisRatio[i,j], decimals = 4))
+            sed = np.loadtxt(SKIRTPath+galaxies[i]+'/sph_SED_'+instName+'_sed.dat', unpack = True)
+            wave = sed[0] * 1e4 # spatially integrated SED wavelengths converted to Angstroms
+            freq = c / wave # in Hz
+            spec = sed[1] # spatially integrated SED fluxes in Janskys
+            sed = np.loadtxt(noDustSKIRTPath+galaxies[i]+'/sph_SED_'+instName+'_sed.dat', unpack = True)
+            noDustSpec = sed[1] 
+            att_mask = wave <= 2e4
+            emit_mask = wave > 2e4
+            attenuation = noDustSpec[att_mask] - spec[att_mask] # in Janskys
+            emission = spec[emit_mask] - noDustSpec[emit_mask]
+            attEnergy = np.trapz(attenuation, freq[att_mask])
+            emitEnergy = np.trapz(emission, freq[emit_mask])
+            plt.scatter(np.log10(SKIRT_stellarMass[i]), attEnergy / emitEnergy, color='k', alpha=0.5, s=15)
+    plt.axhline(y=1, color='k')
+    plt.xlabel('log(Stellar Mass / '+r'$M_{\odot}$'+')', fontsize=16)
+    plt.ylabel('Attenuated Energy / Emitted Energy',fontsize=16)
+    plt.xticks(fontsize=16)
+    plt.yticks(fontsize=16)
+    if exclude:
+        plt.savefig(plotPath+'EnergyBalance/energyBalanceMassCut.png', dpi=300)
+    else:
+        plt.savefig(plotPath+'EnergyBalance/energyBalance.png', dpi=300)
+    plt.close()
+
+def plotAvAxisRatio(exclude=True):
+    os.system('mkdir -p '+plotPath+'AvPlots/')
+    plt.figure(figsize=(10,8))
+    if exclude:
+        plt.scatter(SKIRT_axisRatio[sphMassMask,:], SKIRT_AvValues[sphMassMask,:], color='k', alpha=0.5, s=15)
+    else:
+        plt.scatter(SKIRT_axisRatio, SKIRT_AvValues, color='k', alpha=0.5, s=15)
+    plt.xlabel('Axis Ratio', fontsize=16)
+    plt.ylabel(r'$A_{V}$',fontsize=16)
+    plt.xticks(fontsize=16)
+    plt.yticks(fontsize=16)
+    if exclude:
+        plt.savefig(plotPath+'AvPlots/AvAxisRatioMassCut.png', dpi=300)
+    else:
+        plt.savefig(plotPath+'AvPlots/AvAxisRatio.png', dpi=300)
+    plt.close()
+
+def plotAvStellarMass(exclude=True):
+    os.system('mkdir -p '+plotPath+'AvPlots/')
+    plt.figure(figsize=(10,8))
+    for i in range(len(galaxies)):
+        if exclude:
+            if not sphMassMask[i]:
+                continue
+        for j in range(numOrientations):
+            plt.scatter(np.log10(SKIRT_stellarMass[i]), SKIRT_AvValues[i,j], color='k', alpha=0.5, s=15)
+    plt.xlabel('log(Stellar Mass / '+r'$M_{\odot}$'+')', fontsize=16)
+    plt.ylabel(r'$A_{V}$',fontsize=16)
+    plt.xticks(fontsize=16)
+    plt.yticks(fontsize=16)
+    if exclude:
+        plt.savefig(plotPath+'AvPlots/AvStellarMassMassCut.png', dpi=300)
+    else:
+        plt.savefig(plotPath+'AvPlots/AvStellarMass.png', dpi=300)
+    plt.close()
+
+def plotAvsSFR(exclude=True):
+    os.system('mkdir -p '+plotPath+'AvPlots/')
+    plt.figure(figsize=(10,8))
+    for i in range(len(galaxies)):
+        if exclude:
+            if not sphMassMask[i]:
+                continue
+        for j in range(numOrientations):
+            plt.scatter(np.log10(SKIRT_sSFR[i]), SKIRT_AvValues[i,j], color='k', alpha=0.5, s=15)
+    plt.xlabel('log(sSFR / '+r'$yr^{-1}$'+')', fontsize=16)
+    plt.ylabel(r'$A_{V}$',fontsize=16)
+    plt.xticks(fontsize=16)
+    plt.yticks(fontsize=16)
+    if exclude:
+        plt.savefig(plotPath+'AvPlots/AvsSFRMassCut.png', dpi=300)
+    else:
+        plt.savefig(plotPath+'AvPlots/AvsSFR.png', dpi=300)
+    plt.close()
+
+def plotAvDustToStellar(exclude=True):
+    os.system('mkdir -p '+plotPath+'AvPlots/')
+    plt.figure(figsize=(10,8))
+    for i in range(len(galaxies)):
+        if exclude:
+            if not sphMassMask[i]:
+                continue
+        for j in range(numOrientations):
+            plt.scatter(np.log10(SKIRT_dustToStellar[i]), SKIRT_AvValues[i,j], color='k', alpha=0.5, s=15)
+    plt.xlabel('log(Dust Mass / Stellar Mass)', fontsize=16)
+    plt.ylabel(r'$A_{V}$',fontsize=16)
+    plt.xticks(fontsize=16)
+    plt.yticks(fontsize=16)
+    if exclude:
+        plt.savefig(plotPath+'AvPlots/AvDustToStellarMassCut.png', dpi=300)
+    else:
+        plt.savefig(plotPath+'AvPlots/AvDustToStellar.png', dpi=300)
     plt.close()
 
 def makeImages(galaxy):
@@ -158,10 +307,10 @@ def makeImages(galaxy):
     plt.savefig(plotPath+'zrgImages/'+galaxy+'/'+instName+'_zrg.png', dpi=sizes[0])
     plt.close()
 
-def colorColorPlots(i):
-    if os.path.isfile(plotPath+'colorPlots/'+plot_names[i]+'.png'): # skip if already done
-        print('color color plots already done')
-        return
+def colorColorPlots(i, exclude=True):
+    #if os.path.isfile(plotPath+'colorPlots/'+plot_names[i]+'.png'): # skip if already done
+    #    print('color color plots already done')
+    #    return
     plt.figure(figsize=(10,8))
     # DustPedia propogation of errors
     xerr = np.absolute(dp_flux[:,ratio_indicies[i][0]] / dp_flux[:,ratio_indicies[i][1]]) * np.sqrt( 
@@ -202,9 +351,17 @@ def colorColorPlots(i):
                          xerr=xerr[d], yerr=yerr[d], elinewidth=0.2, marker='o',
                          markersize=5, linewidth=0, color=colors[d], zorder=0, alpha=0.3,
                          xuplims=xuplims, xlolims=xlolims, uplims=uplims, lolims=lolims)
-    for j in range(numOrientations):
-        plt.scatter(SKIRT_flux[:,j,ratio_indicies[i][0]] / SKIRT_flux[:,j,ratio_indicies[i][1]], 
-                    SKIRT_flux[:,j,ratio_indicies[i][2]] / SKIRT_flux[:,j,ratio_indicies[i][3]], 
+    #for j in range(numOrientations):
+    #    plt.scatter(SKIRT_flux[:,j,ratio_indicies[i][0]] / SKIRT_flux[:,j,ratio_indicies[i][1]], 
+    #                SKIRT_flux[:,j,ratio_indicies[i][2]] / SKIRT_flux[:,j,ratio_indicies[i][3]], 
+    #                marker='o', s=20, zorder=10,alpha=0.7, c='blue')
+    if exclude:
+        plt.scatter(SKIRT_flux[sphMassMask,:,ratio_indicies[i][0]] / SKIRT_flux[sphMassMask,:,ratio_indicies[i][1]], 
+                    SKIRT_flux[sphMassMask,:,ratio_indicies[i][2]] / SKIRT_flux[sphMassMask,:,ratio_indicies[i][3]], 
+                    marker='o', s=20, zorder=10,alpha=0.7, c='blue')
+    else:
+        plt.scatter(SKIRT_flux[sphMassMask,:,ratio_indicies[i][0]] / SKIRT_flux[sphMassMask,:,ratio_indicies[i][1]], 
+                    SKIRT_flux[sphMassMask,:,ratio_indicies[i][2]] / SKIRT_flux[sphMassMask,:,ratio_indicies[i][3]], 
                     marker='o', s=20, zorder=10,alpha=0.7, c='blue')
     plt.xlabel(band_names[ratio_indicies[i][0]]+' / '+band_names[ratio_indicies[i][1]], fontsize=16)
     plt.ylabel(band_names[ratio_indicies[i][2]]+' / '+band_names[ratio_indicies[i][3]], fontsize=16)
@@ -214,7 +371,10 @@ def colorColorPlots(i):
     plt.yticks(fontsize=16)
     #plt.xlim((xlims[i][0], xlims[i][1]))
     #plt.ylim((ylims[i][0], ylims[i][1]))
-    plt.savefig(plotPath+'colorPlots/'+plot_names[i]+'.png',dpi=300)
+    if exclude:
+        plt.savefig(plotPath+'colorPlots/'+plot_names[i]+'MassCut.png',dpi=300)
+    else:
+        plt.savefig(plotPath+'colorPlots/'+plot_names[i]+'.png',dpi=300)
     plt.close()
 
 def plotEachAxisRatioVsColor(i):
@@ -232,7 +392,6 @@ def plotEachAxisRatioVsColor(i):
         plt.yticks(fontsize=16)
         plt.savefig(plotPath+'sphAxisRatioColorPlots/'+galaxies[j]+'/'+axisRatio_plot_names[i]+'.png',dpi=300)
         plt.close()
-
 
 def fitBysSFR(i):
     # polyfit does not handle NaNs, need to mask them out first
@@ -255,6 +414,8 @@ def fitBysSFR(i):
     flat_sphFaceOnFluxRatios = np.asarray([])
     # flatten arrays (each galaxy may have multiple face-on orientations)
     for j in range(len(galaxies)):
+        if not sphMassMask[j]: 
+            continue
         current_sphFaceOnFluxRatios = np.log10(SKIRT_flux[j,sphFaceOnMask[j],axisRatio_color_indices[i][0]] /
                                       SKIRT_flux[j,sphFaceOnMask[j],axisRatio_color_indices[i][1]]) 
         current_sphFaceOnsSFR = np.repeat(np.log10(SKIRT_sSFR[j, np.newaxis]), 
@@ -276,7 +437,8 @@ def fitBysSFR(i):
     plt.savefig(plotPath+'fitPlots/'+axisRatio_plot_names[i]+'.png',dpi=300)
     plt.close()
     dpAvg = dpFit(np.log10(dp_SFR / dp_stellarMass))
-    sphAvg = np.repeat(sphFit(np.log10(SKIRT_sSFR))[:, np.newaxis], numOrientations, axis=1)
+    #sphAvg = np.repeat(sphFit(np.log10(SKIRT_sSFR))[:, np.newaxis], numOrientations, axis=1)
+    sphAvg = np.repeat(sphFit(np.log10(SKIRT_sSFR))[sphMassMask, np.newaxis], numOrientations, axis=1)
     return dpAvg, sphAvg
 
 def fitByDustToStellar(i):
@@ -617,6 +779,7 @@ SKIRT_stellarMass = np.zeros(len(galaxies))
 SKIRT_SFR = np.zeros(len(galaxies))
 SKIRT_dustMass = np.zeros(len(galaxies))
 sphFaceOnMask = np.zeros((len(galaxies), numOrientations), dtype=bool)
+sphAvMask = np.zeros(len(galaxies), dtype=bool)
 
 start = timer()
 
@@ -646,13 +809,27 @@ for i in range(len(galaxies)):
         #plotSEDs(galaxies[i])
         #plotSEDs(galaxies[i], dust=False)
         #plotAttenuationCurves(galaxies[i])
-        #makeImages(galaxies[i])
+        #makeImages(galaxies[i]) 
         #plotBothSEDs(galaxies[i]) # dust and noDust
-
-plotAllAttenuationCurves()
 
 SKIRT_sSFR = SKIRT_SFR / SKIRT_stellarMass
 SKIRT_dustToStellar = SKIRT_dustMass / SKIRT_stellarMass
+SKIRT_AvValues = getAvValues()
+sphMassMask = np.log10(SKIRT_stellarMass) > 9.5 
+
+for i in range(len(galaxies)):
+    if np.amax(SKIRT_AvValues[i,:]) < 0.1:
+        sphAvMask[i] = False # don't include galaxies with Av values that don't go above 0.1
+    else:
+        sphAvMask[i] = True 
+
+plotAllAttenuationCurves()
+plotAllAttenuationCurvesNorm()
+plotEnergyBalance()
+plotAvAxisRatio()
+plotAvStellarMass()
+plotAvsSFR()
+plotAvDustToStellar()
 
 end = timer()
 time = end - start
@@ -671,7 +848,7 @@ os.system('mkdir -p '+plotPath+'fitPlots/')
 os.system('mkdir -p '+plotPath+'axisRatioColorPlots/')
 os.system('mkdir -p '+noDustPlotPath+'sSFRPlots/')
 for i in range(len(axisRatio_color_indices)):
-    sSFRnoDust(i)
+    #sSFRnoDust(i)
     #plotEachAxisRatioVsColor(i) # one plot for each NIHAO galaxy 
     dpAvg, sphAvg = fitBysSFR(i)
     #dpAvg, sphAvg = fitByDustToStellar(i)
@@ -685,9 +862,13 @@ for i in range(len(axisRatio_color_indices)):
     yerr = np.sqrt((x_err**2 * (1/(x * np.log(10))**2)) + (y_err**2 * (1/(y * np.log(10)))**2))
     colors = np.empty(dp_num, dtype=str)
     plt.figure(figsize=(10,8))   
-    plt.scatter(SKIRT_axisRatio, 
-                np.log10(SKIRT_flux[:,:,axisRatio_color_indices[i][0]] / 
-                SKIRT_flux[:,:,axisRatio_color_indices[i][1]]) - sphAvg, 
+    #plt.scatter(SKIRT_axisRatio, 
+    #            np.log10(SKIRT_flux[:,:,axisRatio_color_indices[i][0]] / 
+    #            SKIRT_flux[:,:,axisRatio_color_indices[i][1]]) - sphAvg, 
+    #            marker='o', s=20, zorder=10, alpha=0.7, c='blue')
+    plt.scatter(SKIRT_axisRatio[sphMassMask,:], 
+                np.log10(SKIRT_flux[sphMassMask,:,axisRatio_color_indices[i][0]] / 
+                SKIRT_flux[sphMassMask,:,axisRatio_color_indices[i][1]]) - sphAvg, 
                 marker='o', s=20, zorder=10, alpha=0.7, c='blue')
     good_dp_x = np.asarray([]) # includes only disks with reliable photometry
     good_dp_y = np.asarray([])
@@ -718,7 +899,7 @@ for i in range(len(axisRatio_color_indices)):
         else:
             good_dp_x = np.append(good_dp_x, dp_axisRatio[d])
             good_dp_y = np.append(good_dp_y, np.log10(dp_flux[d,axisRatio_color_indices[i][0]] / 
-                             dp_flux[d,axisRatio_color_indices[i][1]]) - dpAvg[d])
+                        dp_flux[d,axisRatio_color_indices[i][1]]) - dpAvg[d])
             plt.errorbar(good_dp_x[-1], good_dp_y[-1], 
                          xerr=0, yerr=yerr[d], elinewidth=0.2, marker='o',
                          markersize=5, linewidth=0, color=colors[d], zorder=0, alpha=0.3,
@@ -733,9 +914,14 @@ for i in range(len(axisRatio_color_indices)):
     dp_y_fit = dpAxisRatioColorFit(dp_x_fit)
     plt.plot(dp_x_fit, dp_y_fit, color='black', linewidth=2)
     # linear fits for NIHAO galaxies
-    sphAxisRatioColorLinearFit = np.polyfit(SKIRT_axisRatio.flatten(), 
-                                 np.log10(SKIRT_flux[:,:,axisRatio_color_indices[i][0]] / 
-                                 SKIRT_flux[:,:,axisRatio_color_indices[i][1]]).flatten() - sphAvg.flatten(), 1)
+    #sphAxisRatioColorLinearFit = np.polyfit(SKIRT_axisRatio.flatten(), 
+    #                             np.log10(SKIRT_flux[:,:,axisRatio_color_indices[i][0]] / 
+    #                             SKIRT_flux[:,:,axisRatio_color_indices[i][1]]).flatten() - 
+    #                             sphAvg.flatten(), 1)
+    sphAxisRatioColorLinearFit = np.polyfit(SKIRT_axisRatio[sphMassMask,:].flatten(), 
+                                 np.log10(SKIRT_flux[sphMassMask,:,axisRatio_color_indices[i][0]] / 
+                                 SKIRT_flux[sphMassMask,:,axisRatio_color_indices[i][1]]).flatten() - 
+                                 sphAvg.flatten(), 1)
     sphAxisRatioColorFit = np.poly1d(sphAxisRatioColorLinearFit) 
     # save fit coefficients as numpy arrays
     np.save(plotPath+'axisRatioColorPlots/sph_'+axisRatio_plot_names[i]+'_fit.npy', sphAxisRatioColorLinearFit)

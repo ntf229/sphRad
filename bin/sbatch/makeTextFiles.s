@@ -29,7 +29,7 @@ singularity exec --overlay overlay-15GB-500K.ext3:ro \
 	    /scratch/work/public/singularity/cuda11.0-cudnn8-devel-ubuntu18.04.sif \
 /bin/bash -c "source /ext3/env.sh; 
 python /home/ntf229/sphRad/bin/makeTextFiles.py \
---ageSmooth=True --SF=True --tauClear=1 --clumps=False \
+--ageSmooth=True --SF=True --tauClear=10 --clumps=False \
 --numCells=20 --numClumps=190 --galaxy=${galaxies[$SLURM_ARRAY_TASK_ID]}"
 
 
