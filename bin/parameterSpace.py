@@ -75,9 +75,9 @@ def dustPediaPlots():
     massMask = np.log10(dp_stellarMass_og) > 7.
     plt.scatter(np.log10(dp_stellarMass_og[massMask]), np.log10(dp_SFR_og[massMask]/dp_stellarMass_og[massMask]), color='k', alpha=0.5, s=15)
     left = np.amin(np.log10(SKIRT_stellarMass[sphMassMask]))
-    bottom =  np.amin(np.log10(SKIRT_sSFR))
+    bottom =  np.amin(np.log10(SKIRT_sSFR[sphMassMask]))
     width = np.amax(np.log10(SKIRT_stellarMass[sphMassMask])) - left
-    height =  np.amax(np.log10(SKIRT_sSFR)) - bottom
+    height =  np.amax(np.log10(SKIRT_sSFR[sphMassMask])) - bottom
     rect = mpatches.Rectangle((left, bottom), width, height, fill=False, color="k", linewidth=2)
     plt.gca().add_patch(rect)
     plt.xlabel('log(Stellar Mass / '+r'$M_{\odot}$'+')', fontsize=16)
@@ -129,7 +129,7 @@ def directoryStructure(tauClear, dustFraction):
 	plotPath += 'numPhotons'+args.numPhotons+'/'+args.SSP+'/'
 	noDustSKIRTPath += 'numPhotons'+args.numPhotons+'/'+args.SSP+'/'
 	noDustPlotPath += 'numPhotons'+args.numPhotons+'/'+args.SSP+'/'
-	return SKIRTPath, plotPath, noDustSKIRTPath, noDustPlotPath
+	return SKIRTPath, plotPath, noDustSKIRTPath, noDustPlotPath, particlePath
 
 def stellarMass(galaxy):
     if os.path.isfile(massPath+galaxy+'/stellarMass.npy'):
@@ -148,8 +148,8 @@ def SFR(galaxy):
     else:
         stars = np.load(particlePath+galaxy+'/stars.npy')
         youngStars = np.load(particlePath+galaxy+'/youngStars.npy')
-        youngMask = stars[:,9] < 1e8 # younger than 100 Myrs
-        SKIRT_SFR = np.sum(stars[youngMask,7]) + (np.sum(youngStars[:,7] * 1.e7)) / 1.e8 # in Msun per year
+        youngMask = stars[:,9] < 1.e8 # younger than 100 Myrs
+        SKIRT_SFR = (np.sum(stars[youngMask,7]) / 1.e8) + np.sum(youngStars[:,7]) # in Msun per year
         os.system('mkdir -p '+SFRPath+galaxy+'/')
         np.save(SFRPath+galaxy+'/SFR.npy', SKIRT_SFR)
     return SKIRT_SFR
@@ -240,10 +240,9 @@ def plotAllAttenuationCurvesNorm():
 def plotEnergyBalance(exclude=True):
     os.system('mkdir -p '+plotPath+'EnergyBalance/')
     c = 2.998e18 # speed of light in Anstroms per second
+    #cmap = plt.cm.rainbow
+    #norm = mpl.colors.Normalize(vmin=0, vmax=1)
     #colors = plt.cm.rainbow(SKIRT_axisRatio)
-    cmap = plt.cm.rainbow
-    norm = mpl.colors.Normalize(vmin=0, vmax=1)
-    colors = plt.cm.rainbow(SKIRT_axisRatio)
     plt.figure(figsize=(10,8))
     for i in range(len(galaxies)):
         if exclude:
@@ -265,9 +264,8 @@ def plotEnergyBalance(exclude=True):
             emitEnergy = np.trapz(emission, freq[emit_mask])
             #plt.scatter(np.log10(SKIRT_stellarMass[i]), attEnergy / emitEnergy, 
             #            c=colors[i,j], alpha=0.5, s=15)
-            plt.scatter(SKIRT_axisRatio[i,j], np.log10(attEnergy / emitEnergy), 
-                        c=colors[i,j], alpha=0.5, s=15)
-    plt.axhline(y=1, color='k')
+            plt.scatter(SKIRT_axisRatio[i,j], np.log10(attEnergy / emitEnergy), alpha=0.5, s=15, color='k')
+    plt.axhline(y=0, color='k')
     #plt.xlabel('log(Stellar Mass / '+r'$M_{\odot}$'+')', fontsize=16)
     plt.xlabel('Axis Ratio', fontsize=16)
     plt.ylabel('Log(Attenuated Energy / Emitted Energy)',fontsize=16)
@@ -718,16 +716,10 @@ def axisRatioColorPlots(separate=False):
                band_names[axisRatio_color_indices[i][1]]+')>', fontsize=16)
     plt.xticks(fontsize=16)
     plt.yticks(fontsize=16)
-    if parameters == "Coarse":
-        if separate:
-            plt.savefig(plotPath+'axisRatioColorPlots/coarse_separate_'+axisRatio_plot_names[i]+'.png',dpi=300)
-        else:
-            plt.savefig(plotPath+'axisRatioColorPlots/coarse_'+axisRatio_plot_names[i]+'.png',dpi=300)
-    elif parameters == "Fine":
-        if separate:
-            plt.savefig(plotPath+'axisRatioColorPlots/fine_separate_'+axisRatio_plot_names[i]+'.png',dpi=300)
-        else:
-            plt.savefig(plotPath+'axisRatioColorPlots/fine_'+axisRatio_plot_names[i]+'.png',dpi=300)
+    if separate:
+        plt.savefig(plotPath+'axisRatioColorPlots/separate_'+axisRatio_plot_names[i]+'.png',dpi=300)
+    else:
+        plt.savefig(plotPath+'axisRatioColorPlots/'+axisRatio_plot_names[i]+'.png',dpi=300)
     plt.close()
     return dpAxisRatioColorLinearFit[0], sphAxisRatioColorLinearFit[0]
 
@@ -757,14 +749,19 @@ else:
     SFRPath += 'noAgeSmooth/'
 
 # Coarse parameter grid
-#tauClears = np.asarray([0.625, 1.25, 2.5, 5., 10.])
-#dustFractions = np.asarray([0.05, 0.1, 0.2, 0.4])
-#parameters = "Coarse"
+tauClears = np.asarray([0.625, 1.25, 2.5, 5., 10.])
+dustFractions = np.asarray([0.05, 0.1, 0.2, 0.4])
+parameters = "Coarse"
 
 # Fine parameter grid
-tauClears = np.asarray([1.5, 1.8, 2.1, 2.5, 3, 3.5, 4.2])
-dustFractions = np.asarray([0.06, 0.071, 0.084, 0.1, 0.12, 0.14, 0.17])
-parameters = "Fine"
+#tauClears = np.asarray([1.5, 1.8, 2.1, 2.5, 3, 3.5, 4.2])
+#dustFractions = np.asarray([0.06, 0.071, 0.084, 0.1, 0.12, 0.14, 0.17])
+#parameters = "Fine"
+
+# Best parameters
+#tauClears = np.asarray([3])
+#dustFractions = np.asarray([0.12])
+#parameters = "Best"
 
 # SKIRT broadband photometry names 
 band_names = ['FUV', 'NUV', 'u', 'g', 'r', 'i', 'z', '2MASS_J', '2MASS_H', '2MASS_KS', 'W1', 
@@ -805,11 +802,13 @@ start = timer()
 # Fill up SKIRT arrays 
 for i in range(len(galaxies)):
     print('starting '+galaxies[i])
+    SKIRTPath, plotPath, noDustSKIRTPath, noDustPlotPath, particlePath = directoryStructure(tauClears[0], dustFractions[0])
     SKIRT_stellarMass[i] = stellarMass(galaxies[i])
     SKIRT_SFR[i] = SFR(galaxies[i])
     SKIRT_dustMass[:, i] = dustMass(galaxies[i])
     # import axis ratios from table
-    selections = np.load(selectedPath+galaxies[i]+'/selectedAxisRatios.npy') # [inc, az, axisRatio]
+    #selections = np.load(selectedPath+galaxies[i]+'/selectedAxisRatios.npy') # [inc, az, axisRatio]
+    selections = np.load(selectedPath+galaxies[i]+'/selectedIncAzAR.npy') # [inc, az, axisRatio]
     SKIRT_axisRatio[i,:] = selections[:,2]
     #sphFaceOnMask[i,:] = SKIRT_axisRatio[i,:] > 0.85
     sphFaceOnMask[i,:] = SKIRT_axisRatio[i,:] == np.amax(SKIRT_axisRatio[i,:]) # most face-on orientation
@@ -817,7 +816,7 @@ for i in range(len(galaxies)):
         instName = 'axisRatio'+str(np.round_(SKIRT_axisRatio[i,j], decimals = 4))
         for df in range(len(dustFractions)):
             for tc in range(len(tauClears)):
-                SKIRTPath, plotPath, noDustSKIRTPath, noDustPlotPath = directoryStructure(tauClears[tc], dustFractions[df])
+                SKIRTPath, plotPath, noDustSKIRTPath, noDustPlotPath, particlePath = directoryStructure(tauClears[tc], dustFractions[df])
                 bb = np.loadtxt(SKIRTPath+galaxies[i]+'/sph_broadband_'+instName+'_sed.dat', unpack = True)
                 SKIRT_flux[tc,df,i,j,:] = bb[1] # spatially integrated broadband fluxes in Janskys
                 noDustbb = np.loadtxt(noDustSKIRTPath+galaxies[i]+'/sph_broadband_'+instName+'_sed.dat', unpack = True)
@@ -844,13 +843,13 @@ dp_num = len(dp_flux[:,0])
 # color-color plots before low A_V mass cut
 for tc in range(len(tauClears)):
     for df in range(len(dustFractions)):
-        SKIRTPath, plotPath, noDustSKIRTPath, noDustPlotPath = directoryStructure(tauClears[tc], dustFractions[df])
+        SKIRTPath, plotPath, noDustSKIRTPath, noDustPlotPath, particlePath = directoryStructure(tauClears[tc], dustFractions[df])
         for i in range(len(ratio_indicies)): # number of plots to make 
             colorColorPlots(exclude=False)
 
 # After low A_V mass cut
 sphMassMask = np.log10(SKIRT_stellarMass) > 9.5 
-sphMassDiskMask = (np.amin(SKIRT_axisRatio, axis=1) < 0.2) & (np.log10(SKIRT_stellarMass) > 9.5)  # disks have axis ratios below 0.3 at some orientation
+sphMassDiskMask = (np.amin(SKIRT_axisRatio, axis=1) < 0.3) & (np.log10(SKIRT_stellarMass) > 9.5)  # disks have axis ratios below 0.3 at some orientation
 
 # DustPedia distribution plots with box around NIHAO stellar mass and sSFR ranges (after A_V mass cut)
 dustPediaPlots()
@@ -858,9 +857,9 @@ dustPediaPlots()
 print('SPH Disk Galaxies:')
 for i in range(len(galaxies)):
     if sphMassDiskMask[i]:
-        if galaxies[i] == 'g1.77e12':
-            print('setting g1.77e12 to non-disk galaxy')
-            sphMassDiskMask[i] = False # bad autoprof fit
+        if galaxies[i] == 'g9.59e10':
+            print('setting g9.59e10 to non-disk galaxy')
+            sphMassDiskMask[i] = False # irregular galaxy
         print(galaxies[i])
 
 # DustPedia data masked to fall within SKIRT stellar mass and sSFR range (with mass cut at 10**9.5 M_sun)
@@ -875,19 +874,20 @@ start = timer()
 
 for tc in range(len(tauClears)):
     for df in range(len(dustFractions)):
-        SKIRTPath, plotPath, noDustSKIRTPath, noDustPlotPath = directoryStructure(tauClears[tc], dustFractions[df])
-        #SKIRT_AvValues[tc,df,:,:] = getAvValues() 	
-        #plotAllAttenuationCurves()
-        #plotAllAttenuationCurvesNorm()
+        SKIRTPath, plotPath, noDustSKIRTPath, noDustPlotPath, particlePath = directoryStructure(tauClears[tc], dustFractions[df])
+        SKIRT_AvValues[tc,df,:,:] = getAvValues() 	
+        plotAllAttenuationCurves()
+        plotAllAttenuationCurvesNorm()
         plotEnergyBalance()
-        #plotAvAxisRatio()
-        plotAvStellarMass(exclude=False)
+        plotAvAxisRatio()
+        plotAvStellarMass(exclude=False) # make sure to run getAvValues() first
         #plotAvsSFR()
         #plotAvDustToStellar()
-        #for i in range(len(ratio_indicies)): # number of plots to make 
-        #    colorColorPlots()
+        for i in range(len(ratio_indicies)): # number of plots to make 
+            colorColorPlots()
         for i in range(len(axisRatio_color_indices)):
             dpARCPSlope[tc,df,i], sphARCPSlope[tc,df,i] = axisRatioColorPlots(separate=True)
+            dpARCPSlope[tc,df,i], sphARCPSlope[tc,df,i] = axisRatioColorPlots(separate=False)
 
 for i in range(len(ratio_indicies)):
     allColorColorPlots() # subplots
@@ -900,24 +900,21 @@ print('Time for AvValues, color plots, and ARCP:', time)
 #colors = np.array(["blue", "green", "yellow", "red"])
 #cmap = plt.get_cmap('rainbow', np.max(dustFractions) - np.min(dustFractions))
 
-plt.figure(figsize=(10,8))
-#for tc in range(len(tauClears)):
-#    for df in range(len(dustFractions)):
-#        plt.scatter(tauClears[tc], (dpARCPSlope[tc,df,0] - sphARCPSlope[tc,df,0]), c=dustFractions[df], cmap=cmap)
-for tc in range(len(tauClears)):
-    plt.scatter(np.repeat(tauClears[tc], len(dustFractions)), (dpARCPSlope[tc,:,0] - sphARCPSlope[tc,:,0]), c=dustFractions, cmap='rainbow')
-plt.xlabel('Clearing Time [Myrs]', fontsize=16)
-plt.ylabel('DP Slope - SPH Slope', fontsize=16)
-plt.xticks(fontsize=16)
-plt.yticks(fontsize=16)
-#plt.colorbar(label='Dust Fraction')
-cbar = plt.colorbar()
-cbar.set_label(label='Dust Fraction',size=16)
-cbar.ax.tick_params(labelsize=16)
-if parameters == "Coarse":
-    plt.savefig(resultPath+'resources/parameterSpacePlots/coarse_ARCPSlopes.png',dpi=300)
-elif parameters == "Fine":
-    plt.savefig(resultPath+'resources/parameterSpacePlots/fine_ARCPSlopes.png',dpi=300)
-plt.close()
+if parameters != "Best":
+    plt.figure(figsize=(10,8))
+    for tc in range(len(tauClears)):
+        plt.scatter(np.repeat(tauClears[tc], len(dustFractions)), (dpARCPSlope[tc,:,0] - sphARCPSlope[tc,:,0]), c=dustFractions, cmap='rainbow')
+    plt.xlabel('Clearing Time [Myrs]', fontsize=16)
+    plt.ylabel('DP Slope - SPH Slope', fontsize=16)
+    plt.xticks(fontsize=16)
+    plt.yticks(fontsize=16)
+    cbar = plt.colorbar()
+    cbar.set_label(label='Dust Fraction',size=16)
+    cbar.ax.tick_params(labelsize=16)
+    if parameters == "Coarse":
+        plt.savefig(resultPath+'resources/parameterSpacePlots/coarse_ARCPSlopes.png',dpi=300)
+    elif parameters == "Fine":
+        plt.savefig(resultPath+'resources/parameterSpacePlots/fine_ARCPSlopes.png',dpi=300)
+    plt.close()
 
 print('done')

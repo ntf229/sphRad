@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/home/ntf229/sphRad/bin/calcAxisRatios.py", line 130, in <module>
+    time_SKIRT = str(datetime.timedelta(seconds=time_SKIRT))
+NameError: name 'datetime' is not defined

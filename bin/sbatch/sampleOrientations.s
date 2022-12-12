@@ -3,13 +3,13 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=40
-#SBATCH --time=10:00:00
+#SBATCH --time=30:00
 #SBATCH --mem=10GB
 #SBATCH --job-name=sampleOrientations
 #SBATCH --mail-type=END
 #SBATCH --output=slurm_out/slurm_%x.out
 #SBATCH --mail-user=ntf229@nyu.edu
-#SBATCH --array=0-19,21-58,60-64
+#SBATCH --array=0-63
 
 module purge
 

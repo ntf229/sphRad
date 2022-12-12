@@ -5,7 +5,7 @@
 #SBATCH --cpus-per-task=1
 #SBATCH --time=8:00:00
 #SBATCH --mem=80GB
-#SBATCH --job-name=makeParticles_ageSmooth_noSF
+#SBATCH --job-name=makeParticles_noAgeSmooth_SF
 #SBATCH --mail-type=END
 #SBATCH --output=slurm_out/slurm_%x.out
 #SBATCH --mail-user=ntf229@nyu.edu
@@ -29,7 +29,7 @@ singularity exec --overlay overlay-15GB-500K.ext3:ro \
 	    /scratch/work/public/singularity/cuda11.0-cudnn8-devel-ubuntu18.04.sif \
 /bin/bash -c "source /ext3/env.sh; 
 python /home/ntf229/sphRad/bin/makeParticles.py \
---ageSmooth=True --SF=False --tauClear=4.2 --clumps=False \
+--ageSmooth=False --SF=True --tauClear=3 --clumps=False \
 --numCells=20 --numClumps=190 --galaxy=${galaxies[$SLURM_ARRAY_TASK_ID]}"
 
 

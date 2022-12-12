@@ -4,7 +4,7 @@
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=1
 #SBATCH --time=4:00:00
-#SBATCH --mem=10GB
+#SBATCH --mem=20GB
 #SBATCH --job-name=parameterSpace
 #SBATCH --mail-type=END
 #SBATCH --output=slurm_out/slurm_%x.out

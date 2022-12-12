@@ -24,15 +24,19 @@ galaxies = ['g1.88e10','g1.89e10','g1.90e10','g2.34e10','g2.63e10','g2.64e10','g
 
 noAgeSmoothStellarMass = np.zeros(len(galaxies))
 ageSmoothStellarMass = np.zeros(len(galaxies))
-noAgeSmoothSFR = np.zeros(len(galaxies))
-ageSmoothSFR = np.zeros(len(galaxies))
+noAgeSmoothSFR100 = np.zeros(len(galaxies))
+ageSmoothSFR100 = np.zeros(len(galaxies))
+noAgeSmoothSFR10 = np.zeros(len(galaxies))
+ageSmoothSFR10 = np.zeros(len(galaxies))
 
-if os.path.isfile(plotPath+'ageSmoothSFR.npy'):
+if os.path.isfile(plotPath+'ageSmoothSFR10.npy'):
     print('loading masses and SFRs')
     noAgeSmoothStellarMass = np.load(plotPath+'noAgeSmoothStellarMass.npy')
     ageSmoothStellarMass = np.load(plotPath+'ageSmoothStellarMass.npy')
-    noAgeSmoothSFR = np.load(plotPath+'noAgeSmoothSFR.npy')
-    ageSmoothSFR = np.load(plotPath+'ageSmoothSFR.npy')
+    noAgeSmoothSFR100 = np.load(plotPath+'noAgeSmoothSFR100.npy')
+    ageSmoothSFR100 = np.load(plotPath+'ageSmoothSFR100.npy')
+    noAgeSmoothSFR10 = np.load(plotPath+'noAgeSmoothSFR10.npy')
+    ageSmoothSFR10 = np.load(plotPath+'ageSmoothSFR10.npy')
 else:
     print('loading particle data')
     for i in range(len(galaxies)):
@@ -44,22 +48,37 @@ else:
         ageSmoothStellarMass[i] = np.sum(ageSmoothStellarMasses) # in M_sun
         noAgeSmoothAges = noAgeSmoothStars[:,9] # in years
         ageSmoothAges = ageSmoothStars[:,9] # in years
-        noAgeSmoothSFR[i] = np.sum(noAgeSmoothStellarMasses[noAgeSmoothAges < 1.e8]) / 1.e8 # M_sun / year (averaged over 100 Myrs)
-        ageSmoothSFR[i] = np.sum(ageSmoothStellarMasses[ageSmoothAges < 1.e8]) / 1.e8 # M_sun / year (averaged over 100 Myrs)
+        noAgeSmoothSFR100[i] = np.sum(noAgeSmoothStellarMasses[noAgeSmoothAges < 1.e8]) / 1.e8 # M_sun / year (averaged over 100 Myrs)
+        ageSmoothSFR100[i] = np.sum(ageSmoothStellarMasses[ageSmoothAges < 1.e8]) / 1.e8 # M_sun / year (averaged over 100 Myrs)
+        noAgeSmoothSFR10[i] = np.sum(noAgeSmoothStellarMasses[noAgeSmoothAges < 1.e7]) / 1.e7 # M_sun / year (averaged over 10 Myrs)
+        ageSmoothSFR10[i] = np.sum(ageSmoothStellarMasses[ageSmoothAges < 1.e7]) / 1.e7 # M_sun / year (averaged over 10 Myrs)
     np.save(plotPath+'noAgeSmoothStellarMass.npy', noAgeSmoothStellarMass)
     np.save(plotPath+'ageSmoothStellarMass.npy', ageSmoothStellarMass)
-    np.save(plotPath+'noAgeSmoothSFR.npy', noAgeSmoothSFR)
-    np.save(plotPath+'ageSmoothSFR.npy', ageSmoothSFR)
+    np.save(plotPath+'noAgeSmoothSFR100.npy', noAgeSmoothSFR100)
+    np.save(plotPath+'ageSmoothSFR100.npy', ageSmoothSFR100)
+    np.save(plotPath+'noAgeSmoothSFR10.npy', noAgeSmoothSFR10)
+    np.save(plotPath+'ageSmoothSFR10.npy', ageSmoothSFR10)
 
 plt.figure(figsize=(10,8))
-plt.scatter(np.log10(noAgeSmoothStellarMass), np.log10(noAgeSmoothSFR/noAgeSmoothStellarMass), color='red', label='Original')
-plt.scatter(np.log10(ageSmoothStellarMass), np.log10(ageSmoothSFR/ageSmoothStellarMass), color='blue', label='Smoothed Ages')
+plt.scatter(np.log10(noAgeSmoothStellarMass), noAgeSmoothSFR100/noAgeSmoothStellarMass, color='red', label='Original')
+plt.scatter(np.log10(ageSmoothStellarMass), ageSmoothSFR100/ageSmoothStellarMass, color='blue', label='Smoothed Ages')
 plt.legend(fontsize=16)
 plt.xlabel('log(Stellar Mass / '+r'$M_{\odot}$)', fontsize=16)
-plt.ylabel('log(sSFR / '+r'$yr^{-1}$)', fontsize=16)
+plt.ylabel('sSFR / '+r'$yr^{-1}$ Averaged Over 100 Myrs', fontsize=16)
 plt.xticks(fontsize=16)
 plt.yticks(fontsize=16)
-plt.savefig(plotPath+'sSFR_stellarMass.png',dpi=300)
+plt.savefig(plotPath+'sSFR100_stellarMass.png',dpi=300)
+plt.close()
+
+plt.figure(figsize=(10,8))
+plt.scatter(np.log10(noAgeSmoothStellarMass), noAgeSmoothSFR10/noAgeSmoothStellarMass, color='red', label='Original')
+plt.scatter(np.log10(ageSmoothStellarMass), ageSmoothSFR10/ageSmoothStellarMass, color='blue', label='Smoothed Ages')
+plt.legend(fontsize=16)
+plt.xlabel('log(Stellar Mass / '+r'$M_{\odot}$)', fontsize=16)
+plt.ylabel('sSFR / '+r'$yr^{-1}$ Averaged Over 10 Myrs', fontsize=16)
+plt.xticks(fontsize=16)
+plt.yticks(fontsize=16)
+plt.savefig(plotPath+'sSFR10_stellarMass.png',dpi=300)
 plt.close()
 
 print('done')

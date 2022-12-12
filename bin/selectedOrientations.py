@@ -1,5 +1,5 @@
 # runs full RT from selected orientations which span each galaxie's range of axis ratios
-# need to first run sampleOrientations.py and axisRatioDist.py to create map from 
+# need to first run sampleOrientations.py and calcAxisRatios.py to create map from 
 # inc and az angles to axis ratios for each galaxy 
 
 import argparse
@@ -80,7 +80,7 @@ yLengthGas = (np.amax(gas[:,1]) - np.amin(gas[:,1]))
 zLengthGas = (np.amax(gas[:,2]) - np.amin(gas[:,2]))
 maxLength = np.amax([xLengthStars, yLengthStars, zLengthStars, xLengthGas, yLengthGas, zLengthGas])
 
-selections = np.load(selectedPath+args.galaxy+'/selectedAxisRatios.npy')
+selections = np.load(selectedPath+args.galaxy+'/selectedIncAzAR.npy')
 
 selectedInc = selections[:,0]
 selectedAz = selections[:,1]

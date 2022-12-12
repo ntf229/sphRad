@@ -22,10 +22,12 @@ codePath=expanduser('~')+'/sphRad/'
 resultPath = '/scratch/ntf229/sphRad/' # store results here
 
 # Directory structure stores important parameters
-textPath = resultPath+'resources/NIHAO/TextFiles/noAgeSmooth/noSF/noClumps/'
+#textPath = resultPath+'resources/NIHAO/TextFiles/noAgeSmooth/noSF/noClumps/'
+particlePath = resultPath+'resources/NIHAO/Particles/noAgeSmooth/noSF/noClumps/'
 SKIRTPath = resultPath+'resources/sampleOrientations_SKIRT/'
 
-textPath += args.galaxy+'/'
+#textPath += args.galaxy+'/'
+particlePath += args.galaxy+'/'
 SKIRTPath += args.galaxy+'/'
 
 start = timer()
@@ -40,15 +42,15 @@ inc = np.round_(inc, decimals = 2)
 az = np.round_(az, decimals = 2)
 
 # calculate size of galaxy image from text files
-stars = np.loadtxt(textPath+'stars.txt') 
+stars = np.load(particlePath+'stars.npy') 
 xLengthStars = (np.amax(stars[:,0]) - np.amin(stars[:,0]))
 yLengthStars = (np.amax(stars[:,1]) - np.amin(stars[:,1]))
 zLengthStars = (np.amax(stars[:,2]) - np.amin(stars[:,2]))
 maxLength = np.amax([xLengthStars, yLengthStars, zLengthStars])
 
 os.system('mkdir -p '+SKIRTPath)
-# copy stars text files to SKIRT directory
-os.system('cp '+textPath+'stars.txt '+SKIRTPath+'stars.txt')
+# save stars and gas text files in SKIRT directory
+np.savetxt(SKIRTPath+'stars.txt', stars)
 # move ski file to SKIRT directory
 os.system('cp '+codePath+'resources/sampleOrientations_sph_template.ski '+SKIRTPath+'sph.ski')
 # create instruments with sampled inc and az 
@@ -71,37 +73,6 @@ os.chdir(SKIRTPath)
 os.system('skirt sph.ski')        
 # delete radiation text files
 os.system('rm stars.txt')
-
-# Axis Ratios
-print('starting autoprof')
-for i in range(num+1): # including inc=0 az=0 
-    if i == 0:
-        name = 'inc0_az0'
-        current_inc = 0
-        current_az = 0
-        if os.path.isfile(SKIRTPath+'axisRatios.npy'):
-            continue # don't need to re-run inc=0 az=0 orientation
-    else:
-        name = 'inc'+str(inc[i-1])+'_az'+str(az[i-1])
-        current_inc = inc[i-1]
-        current_az = az[i-1]
-    os.system('mkdir -p '+SKIRTPath+'autoprof/'+name+'/')
-    os.system('python '+codePath+'python/orientations_mkprof.py --galaxy='+args.galaxy+
-              ' --path='+SKIRTPath+' --save='+SKIRTPath+'autoprof/'+name+'/ --name='+name)
-    axisRatioFile = np.loadtxt(SKIRTPath+'autoprof/'+name+'/'+args.galaxy+'-r-ba.csv', dtype=str)
-    axisRatio = float(axisRatioFile[1,1].split(',')[0])
-    os.system('rm '+SKIRTPath+'autoprof/'+name+'/galaxy-r.fits')
-    os.system('rm '+SKIRTPath+'autoprof/'+name+'/photometry_ellipse_galaxy-r.jpg')
-    #os.system('rm '+SKIRTPath+'autoprof/'+name+'/initialize_ellipse_galaxy-r.jpg')
-    os.system('rm '+SKIRTPath+'sph_'+name+'_sed.dat')
-    os.system('rm '+SKIRTPath+'sph_'+name+'_total.fits')
-    if os.path.isfile(SKIRTPath+'axisRatios.npy'):
-        axisRatios = np.load(SKIRTPath+'axisRatios.npy')
-        axisRatios = np.vstack([axisRatios, [current_inc, current_az, axisRatio]])
-        np.save(SKIRTPath+'axisRatios.npy', axisRatios)
-    else:
-        axisRatios = np.asarray([current_inc, current_az, axisRatio])
-        np.save(SKIRTPath+'axisRatios.npy', axisRatios)
 
 end = timer()
 time_SKIRT = end - start
