@@ -4,12 +4,12 @@
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=40
 #SBATCH --time=24:00:00
-#SBATCH --mem=20GB
+#SBATCH --mem=40GB
 #SBATCH --job-name=bestParamsRT
 #SBATCH --mail-type=END
 #SBATCH --output=slurm_out/slurm_%x.out
 #SBATCH --mail-user=ntf229@nyu.edu
-#SBATCH --array=32,35,36,37,39,42,43,45,47,48,49,50,52,53,54,55,56,59,60
+#SBATCH --array=44,46,51,62-64
 
 module purge
 
@@ -29,7 +29,7 @@ singularity exec --overlay overlay-15GB-500K.ext3:ro \
 	    /scratch/work/public/singularity/cuda11.0-cudnn8-devel-ubuntu18.04.sif \
 /bin/bash -c "source /ext3/env.sh; 
 python /home/ntf229/sphRad/bin/bestParamsRT.py \
---ageSmooth=True --SF=True --tauClear=2.5 --clumps=False --numCells=10 --numClumps=50 \
+--ageSmooth=False --SF=True --tauClear=2.5 --clumps=False --numCells=10 --numClumps=50 \
 --numPhotons=1e9 --pixels=2000 \
 --dustFraction=0.1 --maxTemp=16000 --SSP=FSPS_Chabrier --galaxy=${galaxies[$SLURM_ARRAY_TASK_ID]}"
 

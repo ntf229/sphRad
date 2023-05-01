@@ -404,28 +404,22 @@ def colorColorPlots(exclude=True):
         plt.scatter(SKIRT_flux[tc,df,sphMassMask,:,ratio_indicies[i][0]] / SKIRT_flux[tc,df,sphMassMask,:,ratio_indicies[i][1]], 
                     SKIRT_flux[tc,df,sphMassMask,:,ratio_indicies[i][2]] / SKIRT_flux[tc,df,sphMassMask,:,ratio_indicies[i][3]], 
                     marker='o', s=20, zorder=10,alpha=0.7, c='blue')
-    plt.xlabel(r'$f_{\nu}$('+band_names[ratio_indicies[i][0]]+') / '+r'$f_{\nu}$('+band_names[ratio_indicies[i][1]]+')', fontsize=28)
-    plt.ylabel(r'$f_{\nu}$('+band_names[ratio_indicies[i][2]]+') / '+r'$f_{\nu}$('+band_names[ratio_indicies[i][3]]+')', fontsize=28)
+    plt.xlabel(band_names[ratio_indicies[i][0]]+' / '+band_names[ratio_indicies[i][1]], fontsize=16)
+    plt.ylabel(band_names[ratio_indicies[i][2]]+' / '+band_names[ratio_indicies[i][3]], fontsize=16)
     plt.xscale('log')
     plt.yscale('log')
-    plt.xticks(fontsize=28)
-    plt.yticks(fontsize=28)
+    plt.xticks(fontsize=16)
+    plt.yticks(fontsize=16)
     if exclude:
-        plt.savefig(plotPath+'colorPlots/'+plot_names[i]+'MassCut.png',dpi=300, bbox_inches='tight', pad_inches=0.25)
+        plt.savefig(plotPath+'colorPlots/'+plot_names[i]+'MassCut.png',dpi=300)
     else:
-        plt.savefig(plotPath+'colorPlots/'+plot_names[i]+'.png',dpi=300, bbox_inches='tight', pad_inches=0.25)
+        plt.savefig(plotPath+'colorPlots/'+plot_names[i]+'.png',dpi=300)
     plt.close()
 
 def allColorColorPlots(exclude=True):
-    if eval(args.SF):
-        path = resultPath+'resources/parameterSpacePlots/allColorColorPlots/'
-        fig, axs = plt.subplots(len(tauClears), len(dustFractions), sharex=True, sharey=True, squeeze=False, figsize=(10,8))
-    else:
-        path = resultPath+'resources/parameterSpacePlots/noSFAllColorColorPlots/'
-        fig, axs = plt.subplots(len(tauClears), len(dustFractions), sharex=True, sharey=True, squeeze=False, figsize=(10,3))
-    os.system('mkdir -p '+path)
+    os.system('mkdir -p '+resultPath+'resources/parameterSpacePlots/allColorColorPlots/')
     #plt.figure(figsize=(10,8))
-    #fig, axs = plt.subplots(len(tauClears), len(dustFractions), sharex=True, sharey=True, squeeze=False)
+    fig, axs = plt.subplots(len(tauClears), len(dustFractions), sharex=True, sharey=True)
     fig.subplots_adjust(hspace=0)
     fig.subplots_adjust(wspace=0)
     # DustPedia propogation of errors
@@ -460,16 +454,15 @@ def allColorColorPlots(exclude=True):
             lolims = True
             colors[d] = 'red'
         if bad:
-            #print('bad DustPedia data point')
-            pass
+            print('bad DustPedia data point')
         else:
             for tc in range(len(tauClears)):
                 for df in range(len(dustFractions)):
                     axs[tc,df].errorbar(dp_flux[d,ratio_indicies[i][0]] / dp_flux[d,ratio_indicies[i][1]], 
                                 dp_flux[d,ratio_indicies[i][2]] / dp_flux[d,ratio_indicies[i][3]], 
-                                xerr=xerr[d], yerr=yerr[d], elinewidth=0.1, marker='o',
-                                markersize=1, linewidth=0, color=colors[d], zorder=0, alpha=0.3,
-                                xuplims=xuplims, xlolims=xlolims, uplims=uplims, lolims=lolims, capsize=0)
+                                xerr=xerr[d], yerr=yerr[d], elinewidth=0.01, marker='o',
+                                markersize=0.5, linewidth=0, color=colors[d], zorder=0, alpha=0.3,
+                                xuplims=xuplims, xlolims=xlolims, uplims=uplims, lolims=lolims, capsize=0.1)
     for tc in range(len(tauClears)):
         for df in range(len(dustFractions)):
             axs[tc,df].set_xscale('log')
@@ -478,31 +471,27 @@ def allColorColorPlots(exclude=True):
             if exclude:
                 axs[tc,df].scatter(SKIRT_flux[tc,df,sphMassMask,:,ratio_indicies[i][0]] / SKIRT_flux[tc,df,sphMassMask,:,ratio_indicies[i][1]], 
                             SKIRT_flux[tc,df,sphMassMask,:,ratio_indicies[i][2]] / SKIRT_flux[tc,df,sphMassMask,:,ratio_indicies[i][3]], 
-                            marker='o', s=1, zorder=10,alpha=0.3, c='blue')
+                            marker='o', s=0.5, zorder=10,alpha=0.3, c='blue')
             else:
                 axs[tc,df].scatter(SKIRT_flux[tc,df,sphMassMask,:,ratio_indicies[i][0]] / SKIRT_flux[tc,df,sphMassMask,:,ratio_indicies[i][1]], 
                             SKIRT_flux[tc,df,sphMassMask,:,ratio_indicies[i][2]] / SKIRT_flux[tc,df,sphMassMask,:,ratio_indicies[i][3]], 
-                            marker='o', s=1, zorder=10,alpha=0.3, c='blue')
+                            marker='o', s=0.5, zorder=10,alpha=0.3, c='blue')
     ax = fig.add_subplot(111, frameon=False)
-    ax.tick_params('both', labelbottom=False, labelleft=False, bottom=False, left=False)
+    ax.tick_params('both', labelbottom=False, labelleft=False)
     ax.set_xlabel(r'$f_{\nu}$('+band_names[ratio_indicies[i][0]]+') / '+r'$f_{\nu}$('+band_names[ratio_indicies[i][1]]+')', fontsize=16)
     ax.set_ylabel(r'$f_{\nu}$('+band_names[ratio_indicies[i][2]]+') / '+r'$f_{\nu}$('+band_names[ratio_indicies[i][3]]+')', fontsize=16)
-    if eval(args.SF):
-        ax.xaxis.set_label_coords(0.5, -0.08)
-        ax.yaxis.set_label_coords(-0.09, 0.5)
-    else:
-        ax.xaxis.set_label_coords(0.5, -0.15)
-        ax.yaxis.set_label_coords(-0.09, 0.5)
+    ax.xaxis.set_label_coords(0.5, -0.08)
+    ax.yaxis.set_label_coords(-0.09, 0.5)
     if parameters == "Coarse":
         if exclude:
-            plt.savefig(path+'coarse_'+plot_names[i]+'MassCut.png',dpi=600)
+            plt.savefig(resultPath+'resources/parameterSpacePlots/allColorColorPlots/coarse_'+plot_names[i]+'MassCut.png',dpi=600)
         else:
-            plt.savefig(path+'coarse_'+plot_names[i]+'.png',dpi=600)
+            plt.savefig(resultPath+'resources/parameterSpacePlots/allColorColorPlots/coarse_'+plot_names[i]+'.png',dpi=600)
     elif parameters == "Fine":
         if exclude:
-            plt.savefig(path+'fine_'+plot_names[i]+'MassCut.png',dpi=600)
+            plt.savefig(resultPath+'resources/parameterSpacePlots/allColorColorPlots/fine_'+plot_names[i]+'MassCut.png',dpi=600)
         else:
-            plt.savefig(path+'fine_'+plot_names[i]+'.png',dpi=600)
+            plt.savefig(resultPath+'resources/parameterSpacePlots/allColorColorPlots/fine_'+plot_names[i]+'.png',dpi=600)
     plt.close()
 
 def fitBysSFR():
@@ -542,12 +531,12 @@ def fitBysSFR():
     x_fit = np.linspace(np.amin(flat_sphFaceOnsSFR[nanMask]), np.amax(flat_sphFaceOnsSFR[nanMask]), num=2)
     y_fit = sphFit(x_fit)
     plt.plot(x_fit, y_fit, color='blue')
-    plt.xlabel('log(sSFR)', fontsize=28)
+    plt.xlabel('log(sSFR)', fontsize=16)
     plt.ylabel('log('+r'$f_{\nu}$('+band_names[axisRatio_color_indices[i][0]]+') / '+
-               r'$f_\nu}$('+band_names[axisRatio_color_indices[i][1]]+'))', fontsize=28)
-    plt.xticks(fontsize=28)
-    plt.yticks(fontsize=28)
-    plt.savefig(plotPath+'fitPlots/'+axisRatio_plot_names[i]+'.png',dpi=300, bbox_inches='tight', pad_inches=0.25)
+               r'$f_\nu}$('+band_names[axisRatio_color_indices[i][1]]+'))', fontsize=16)
+    plt.xticks(fontsize=16)
+    plt.yticks(fontsize=16)
+    plt.savefig(plotPath+'fitPlots/'+axisRatio_plot_names[i]+'.png',dpi=300)
     plt.close()
     dpAvg = dpFit(np.log10(dp_SFR / dp_stellarMass))
     sphAvg = np.repeat(sphFit(np.log10(SKIRT_sSFR))[sphMassDiskMask, np.newaxis], numOrientations, axis=1)
@@ -638,12 +627,12 @@ def sSFRnoDust():
     x_fit = np.linspace(np.amin(flat_sphFaceOnsSFR[nanMask]), np.amax(flat_sphFaceOnsSFR[nanMask]), num=2)
     y_fit = sphFit(x_fit)
     plt.plot(x_fit, y_fit, color='blue')
-    plt.xlabel('log(sSFR)', fontsize=28)
+    plt.xlabel('log(sSFR)', fontsize=16)
     plt.ylabel('log('+band_names[axisRatio_color_indices[i][0]]+' / '+
-                band_names[axisRatio_color_indices[i][1]]+')', fontsize=28)
-    plt.xticks(fontsize=28)
-    plt.yticks(fontsize=28)
-    plt.savefig(noDustPlotPath+'sSFRPlots/'+axisRatio_plot_names[i]+'.png',dpi=300, bbox_inches='tight', pad_inches=0.25)
+                band_names[axisRatio_color_indices[i][1]]+')', fontsize=16)
+    plt.xticks(fontsize=16)
+    plt.yticks(fontsize=16)
+    plt.savefig(noDustPlotPath+'sSFRPlots/'+axisRatio_plot_names[i]+'.png',dpi=300)
     plt.close()
 
 def axisRatioColorPlots(separate=False):
@@ -720,17 +709,17 @@ def axisRatioColorPlots(separate=False):
     sph_y_fit = sphAxisRatioColorFit(sph_x_fit)
     plt.plot(sph_x_fit, sph_y_fit, color='blue', linewidth=2)
     # format and save 
-    plt.xlabel('Axis Ratio', fontsize=28)
+    plt.xlabel('Axis Ratio', fontsize=16)
     plt.ylabel('log('+r'$f_{\nu}$('+band_names[axisRatio_color_indices[i][0]]+') / '+
                r'$f_{\nu}$('+band_names[axisRatio_color_indices[i][1]]+')) - <log('+
                r'$f_{\nu}$('+band_names[axisRatio_color_indices[i][0]]+') / '+
-               r'$f_{\nu}$('+band_names[axisRatio_color_indices[i][1]]+'))>', fontsize=28)
-    plt.xticks(fontsize=28)
-    plt.yticks(fontsize=28)
+               r'$f_{\nu}$('+band_names[axisRatio_color_indices[i][1]]+'))>', fontsize=16)
+    plt.xticks(fontsize=16)
+    plt.yticks(fontsize=16)
     if separate:
-        plt.savefig(plotPath+'axisRatioColorPlots/separate_'+axisRatio_plot_names[i]+'.png',dpi=300, bbox_inches='tight', pad_inches=0.25)
+        plt.savefig(plotPath+'axisRatioColorPlots/separate_'+axisRatio_plot_names[i]+'.png',dpi=300)
     else:
-        plt.savefig(plotPath+'axisRatioColorPlots/'+axisRatio_plot_names[i]+'.png',dpi=300, bbox_inches='tight', pad_inches=0.25)
+        plt.savefig(plotPath+'axisRatioColorPlots/'+axisRatio_plot_names[i]+'.png',dpi=300)
     plt.close()
     return dpAxisRatioColorLinearFit[0], sphAxisRatioColorLinearFit[0]
 
@@ -760,10 +749,7 @@ else:
     SFRPath += 'noAgeSmooth/'
 
 # Coarse parameter grid
-if eval(args.SF):
-    tauClears = np.asarray([0.625, 1.25, 2.5, 5., 10.])
-else:
-    tauClears = np.asarray([None])
+tauClears = np.asarray([0.625, 1.25, 2.5, 5., 10.])
 dustFractions = np.asarray([0.05, 0.1, 0.2, 0.4])
 parameters = "Coarse"
 
@@ -900,7 +886,7 @@ for tc in range(len(tauClears)):
         #for i in range(len(ratio_indicies)): # number of plots to make 
         #    colorColorPlots()
         for i in range(len(axisRatio_color_indices)):
-            dpARCPSlope[tc,df,i], sphARCPSlope[tc,df,i] = axisRatioColorPlots(separate=True)
+            #dpARCPSlope[tc,df,i], sphARCPSlope[tc,df,i] = axisRatioColorPlots(separate=True)
             dpARCPSlope[tc,df,i], sphARCPSlope[tc,df,i] = axisRatioColorPlots(separate=False)
 
 for i in range(len(ratio_indicies)):
@@ -914,34 +900,21 @@ print('Time for AvValues, color plots, and ARCP:', time)
 #colors = np.array(["blue", "green", "yellow", "red"])
 #cmap = plt.get_cmap('rainbow', np.max(dustFractions) - np.min(dustFractions))
 
-if eval(args.SF):
+if parameters != "Best":
     plt.figure(figsize=(10,8))
     for tc in range(len(tauClears)):
-        plt.scatter(np.repeat(tauClears[tc], len(dustFractions)), (dpARCPSlope[tc,:,0] - sphARCPSlope[tc,:,0]), c=dustFractions, cmap='rainbow', s=40)
-    plt.xlabel('Clearing Time [Myrs]', fontsize=28)
-    plt.ylabel('DP Slope - SPH Slope', fontsize=28)
-    plt.xticks(fontsize=28)
-    plt.yticks(fontsize=28)
+        plt.scatter(np.repeat(tauClears[tc], len(dustFractions)), (dpARCPSlope[tc,:,0] - sphARCPSlope[tc,:,0]), c=dustFractions, cmap='rainbow')
+    plt.xlabel('Clearing Time [Myrs]', fontsize=16)
+    plt.ylabel('DP Slope - SPH Slope', fontsize=16)
+    plt.xticks(fontsize=16)
+    plt.yticks(fontsize=16)
     cbar = plt.colorbar()
-    cbar.set_label(label='Dust Fraction',size=28)
-    cbar.ax.tick_params(labelsize=28)
+    cbar.set_label(label='Dust Fraction',size=16)
+    cbar.ax.tick_params(labelsize=16)
     if parameters == "Coarse":
-        plt.savefig(resultPath+'resources/parameterSpacePlots/coarse_ARCPSlopes.png',dpi=300, bbox_inches='tight', pad_inches=0.25)
+        plt.savefig(resultPath+'resources/parameterSpacePlots/coarse_ARCPSlopes.png',dpi=300)
     elif parameters == "Fine":
-        plt.savefig(resultPath+'resources/parameterSpacePlots/fine_ARCPSlopes.png',dpi=300, bbox_inches='tight', pad_inches=0.25)
-    plt.close()
-else:
-    plt.figure(figsize=(10,8))
-    for tc in range(len(tauClears)):
-        plt.scatter(dustFractions, (dpARCPSlope[tc,:,0] - sphARCPSlope[tc,:,0]), color='k', s=40)
-    plt.xlabel('Dust Fraction', fontsize=28)
-    plt.ylabel('DP Slope - SPH Slope', fontsize=28)
-    plt.xticks(fontsize=28)
-    plt.yticks(fontsize=28)
-    if parameters == "Coarse":
-        plt.savefig(resultPath+'resources/parameterSpacePlots/noSF_coarse_ARCPSlopes.png',dpi=300, bbox_inches='tight', pad_inches=0.25)
-    elif parameters == "Fine":
-        plt.savefig(resultPath+'resources/parameterSpacePlots/noSF_fine_ARCPSlopes.png',dpi=300, bbox_inches='tight', pad_inches=0.25)
+        plt.savefig(resultPath+'resources/parameterSpacePlots/fine_ARCPSlopes.png',dpi=300)
     plt.close()
 
 print('done')

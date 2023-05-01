@@ -131,6 +131,60 @@ def directoryStructure(tauClear, dustFraction):
 	noDustPlotPath += 'numPhotons'+args.numPhotons+'/'+args.SSP+'/'
 	return SKIRTPath, plotPath, noDustSKIRTPath, noDustPlotPath, particlePath
 
+def stellarMass(galaxy):
+    if os.path.isfile(massPath+galaxy+'/stellarMass.npy'):
+        SKIRT_stellarMass = float(np.load(massPath+galaxy+'/stellarMass.npy'))
+    else:
+        stars = np.load(particlePath+galaxy+'/stars.npy')
+        youngStars = np.load(particlePath+galaxy+'/youngStars.npy')
+        SKIRT_stellarMass = np.sum(stars[:,7]) + (np.sum(youngStars[:,7] * 1.e7)) # in Msun
+        os.system('mkdir -p '+massPath+galaxy+'/')
+        np.save(massPath+galaxy+'/stellarMass.npy', SKIRT_stellarMass)
+    return SKIRT_stellarMass
+
+def SFR(galaxy):
+    if os.path.isfile(SFRPath+galaxy+'/SFR.npy'):
+        SKIRT_SFR = float(np.load(SFRPath+galaxy+'/SFR.npy'))
+    else:
+        stars = np.load(particlePath+galaxy+'/stars.npy')
+        youngStars = np.load(particlePath+galaxy+'/youngStars.npy')
+        youngMask = stars[:,9] < 1.e8 # younger than 100 Myrs
+        SKIRT_SFR = (np.sum(stars[youngMask,7]) / 1.e8) + np.sum(youngStars[:,7]) # in Msun per year
+        os.system('mkdir -p '+SFRPath+galaxy+'/')
+        np.save(SFRPath+galaxy+'/SFR.npy', SKIRT_SFR)
+    return SKIRT_SFR
+
+def dustMass(galaxy):
+    if os.path.isfile(massPath+galaxy+'/maxTemp'+args.maxTemp+'/metalMass.npy'):
+        metalMass = float(np.load(massPath+galaxy+'/maxTemp'+args.maxTemp+'/metalMass.npy'))
+    else:
+        gas = np.load(particlePath+galaxy+'/gas.npy')
+        tempMask = gas[:,6] < float(args.maxTemp)
+        ghostMask = np.asarray(gas[tempMask][:,4] > 0, dtype=bool) # mask out negative mass ghost particles
+        metalMass = np.sum(gas[tempMask, 4][ghostMask] * gas[tempMask, 5][ghostMask]) # in Msun
+        os.system('mkdir -p '+massPath+galaxy+'/maxTemp'+args.maxTemp+'/')
+        np.save(massPath+galaxy+'/maxTemp'+args.maxTemp+'/metalMass.npy', metalMass)
+    SKIRT_dustMass = metalMass * dustFraction 
+    return SKIRT_dustMass
+
+def getAvValues():
+    AvValues = np.zeros((len(galaxies), numOrientations))
+    for i in range(len(galaxies)):
+        for j in range(numOrientations):
+            instName = 'axisRatio'+str(np.round_(SKIRT_axisRatio[i,j], decimals = 4))
+            sed = np.loadtxt(SKIRTPath+galaxies[i]+'/sph_SED_'+instName+'_sed.dat', unpack = True)
+            wave = sed[0] * 1e4 # spatially integrated SED wavelengths converted to Angstroms
+            spec = sed[1] # spatially integrated SED fluxes in Janskys
+            sed = np.loadtxt(noDustSKIRTPath+galaxies[i]+'/sph_SED_'+instName+'_sed.dat', unpack = True)
+            noDustSpec = sed[1] 
+            att_mask = (wave >= 912) & (wave <= 2e4)
+            dustMags = 22.5 - 2.5*np.log10((spec/3631) * 1e9) # convert to Pogson magnitudes
+            noDustMags = 22.5 - 2.5*np.log10((noDustSpec/3631) * 1e9) # convert to Pogson magnitudes
+            attenuation = dustMags[att_mask] - noDustMags[att_mask]
+            Av_index = np.abs(wave[att_mask] - 5500).argmin() # find wave index closest to 5500 angstroms (V)
+            AvValues[i,j] = attenuation[Av_index]
+    return AvValues
+
 def plotAllAttenuationCurves():
     os.system('mkdir -p '+plotPath+'AllAttenuationCurves/')
     plt.figure(figsize=(10,8))
@@ -371,7 +425,7 @@ def makeImages():
         for j in range(numOrientations):
             instName = 'axisRatio'+str(np.round_(SKIRT_axisRatio[i,j], decimals = 4))
             cube_file = fits.open(SKIRTPath+galaxies[i]+'/sph_broadband_'+instName+'_total.fits')
-            cube = np.asarray(cube_file[0].data) # (20, pixels, pixels) cube of broadbands in MJy/sr
+            cube = np.asarray(cube_file[0].data) # (pixels, pixels, 20) cube of broadbands in MJy/sr
             # RGB = z, r, g:
             r_grid = np.asarray(cube[6,:,:]) # sdss_z band (see band_names for indicies)
             g_grid = np.asarray(cube[4,:,:]) # sdss_r band
@@ -427,7 +481,6 @@ args = parser.parse_args()
 
 codePath = '/home/ntf229/sphRad/'
 resultPath = '/scratch/ntf229/sphRad/' # store results here
-fitsPath = '/scratch/ntf229/sphRad/resources/bestParamsFits/'
 
 massPath = resultPath+'resources/NIHAO/GlobalProps/stellarMasses/'
 SFRPath = resultPath+'resources/NIHAO/GlobalProps/SFR/'
@@ -438,8 +491,8 @@ else:
     SFRPath += 'noAgeSmooth/'
 
 # Best parameters
-tauClear = 2.5
-dustFraction = 0.1
+tauClear = 3.
+dustFraction = 0.12
 
 # SKIRT broadband photometry names 
 band_names = ['FUV', 'NUV', 'u', 'g', 'r', 'i', 'z', '2MASS_J', '2MASS_H', '2MASS_KS', 'W1', 
@@ -474,12 +527,6 @@ SKIRT_SFR = np.zeros(len(galaxies))
 SKIRT_dustMass = np.zeros(len(galaxies))
 sphFaceOnMask = np.zeros((len(galaxies), numOrientations), dtype=bool)
 SKIRT_AvValues = np.zeros((len(galaxies), numOrientations))
-
-galaxies = fitsio.read(fitsPath+'nihao-seds.fits', ext='GALAXIES')
-summary = fitsio.read(fitsPath+'nihao-seds.fits', ext='SUMMARY')
-wave = fitsio.read(fitsPath+'nihao-seds.fits', ext='WAVE')
-spectrum = fitsio.read(fitsPath+'nihao-seds.fits', ext='SPEC')
-spectrum_nodust = fitsio.read(fitsPath+'nihao-seds.fits', ext='SPECNODUST')
 
 SKIRTPath, plotPath, noDustSKIRTPath, noDustPlotPath, particlePath = directoryStructure(tauClear, dustFraction)
 
