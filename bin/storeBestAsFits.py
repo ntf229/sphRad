@@ -28,6 +28,38 @@ def getSFR(galaxy):
         np.save(SFRPath+galaxy+'/SFR.npy', SKIRT_SFR)
     return SKIRT_SFR
 
+def getSFH(galaxy):
+    # star formation history (1D histogram)
+    # ages on log scale in years
+    stars = np.load(particlePathNoSF+galaxy+'/stars.npy')
+    ages = stars[:,9] # in years 
+    masses = stars[:,7] # in M_sun
+    binGrid = np.logspace(np.log10(np.amin(ages)), np.log10(np.amax(ages)), num=numBins+1)
+    counts, bins = np.histogram(ages, bins=binGrid, weights=masses, density=False)
+    ages = bins[:-1]
+    SFH = counts
+    return SFH, ages
+
+def getCEH(galaxy):
+    # chemical evolution history (2D histogram)
+    # ages and metallicities on log scale
+    stars = np.load(particlePathNoSF+galaxy+'/stars.npy')
+    ages = stars[:,9] # in years 
+    masses = stars[:,7] # in M_sun
+    metals = np.float64(stars[:,8])
+    metals[metals==0] = np.amin(metals[metals>0]) # set to smallest nonzero value so we can log scale
+    xbinGrid = np.logspace(np.log10(np.amin(ages)), np.log10(np.amax(ages)), num=numBins+1)
+    ybinGrid = np.logspace(np.log10(np.amin(metals)), np.log10(np.amax(metals)), num=numBins+1)
+    counts, xbins, ybins = np.histogram2d(ages, metals, bins=[xbinGrid,ybinGrid], weights=masses, density=False)
+    #CEH = np.zeros((3, numBins, numBins))
+    #xMesh, yMesh = np.meshgrid(xbins[:-1], ybins[:-1])
+    #CEH[0] = xMesh
+    #CEH[1] = yMesh
+    #CEH[2] = counts
+    CEH = counts
+    metals = ybins[:-1]
+    return CEH, metals
+
 def getDustMass(galaxy):
     if os.path.isfile(massPath+galaxy+'/maxTemp'+args.maxTemp+'/metalMass.npy'):
         metalMass = float(np.load(massPath+galaxy+'/maxTemp'+args.maxTemp+'/metalMass.npy'))
@@ -78,6 +110,19 @@ def energyBalance():
     emitEnergy = -1*np.trapz(emission, freq[emit_mask]) # 10^(−23) erg * s^(−1) * cm^(−2)⋅
     return attEnergy, emitEnergy
 
+def getSize(galaxy):
+    # calculate size of galaxy image from text files
+    stars = np.load(particlePath+galaxy+'/stars.npy')
+    gas = np.load(particlePath+galaxy+'/gas.npy')
+    xLengthStars = (np.amax(stars[:,0]) - np.amin(stars[:,0]))
+    yLengthStars = (np.amax(stars[:,1]) - np.amin(stars[:,1]))
+    zLengthStars = (np.amax(stars[:,2]) - np.amin(stars[:,2]))
+    xLengthGas = (np.amax(gas[:,0]) - np.amin(gas[:,0]))
+    yLengthGas = (np.amax(gas[:,1]) - np.amin(gas[:,1]))
+    zLengthGas = (np.amax(gas[:,2]) - np.amin(gas[:,2]))
+    maxLength = np.amax([xLengthStars, yLengthStars, zLengthStars, xLengthGas, yLengthGas, zLengthGas])
+    return maxLength
+
 parser = argparse.ArgumentParser()
 parser.add_argument("--ageSmooth") # if True, smooth ages based on number of star particles (makeTextFiles parameter)
 parser.add_argument("--SF") # if True, star particles younger than 10 Myrs are assigned MAPPINGS-III SEDs (makeTextFiles parameter)
@@ -92,7 +137,7 @@ parser.add_argument("--maxTemp") # maximum temperature at which dust can form (S
 parser.add_argument("--SSP") # simple stellar population model including IMF after underscore (SKIRT parameter)
 args = parser.parse_args()
 
-storeImages = False
+storeImages = True
 
 numPixels = int(args.pixels)
 reducedPixels = int(numPixels/4)
@@ -105,6 +150,8 @@ resultPath = '/scratch/ntf229/sphRad/' # store results here
 selectedPath = resultPath+'resources/selectedOrientations/'
 massPath = resultPath+'resources/NIHAO/GlobalProps/stellarMasses/'
 SFRPath = resultPath+'resources/NIHAO/GlobalProps/SFR/'
+SFHPath = resultPath+'resources/NIHAO/GlobalProps/SFH/'
+CEHPath = resultPath+'resources/NIHAO/GlobalProps/CEH/'
 savePath = resultPath+'resources/bestParamsFits/'
 
 # Directory structure stores important parameters
@@ -113,17 +160,24 @@ if eval(args.SF):
 else:
     SKIRTPath = resultPath+'resources/selectedOrientations_SKIRT/' # to save space
 particlePath = resultPath+'resources/NIHAO/Particles/'
+particlePathNoSF = resultPath+'resources/NIHAO/Particles/' # for SFHs
 
 if eval(args.ageSmooth):
     SKIRTPath += 'ageSmooth/'
     particlePath += 'ageSmooth/'
+    particlePathNoSF += 'ageSmooth/'
     savePath += 'ageSmooth/'
     SFRPath += 'ageSmooth/'
+    SFHPath += 'ageSmooth/'
+    CEHPath += 'ageSmooth/'
 else:
     SKIRTPath += 'noAgeSmooth/'
     particlePath += 'noAgeSmooth/'
+    particlePathNoSF += 'noAgeSmooth/'
     savePath += 'noAgeSmooth/'
     SFRPath += 'noAgeSmooth/'
+    SFHPath += 'noAgeSmooth/'
+    CEHPath += 'noAgeSmooth/'
 if eval(args.SF):
     SKIRTPath += 'SF/tauClear'+args.tauClear+'/'
     particlePath += 'SF/tauClear'+args.tauClear+'/'
@@ -132,6 +186,7 @@ else:
     SKIRTPath += 'noSF/'
     particlePath += 'noSF/'
     savePath += 'noSF/'
+particlePathNoSF += 'noSF/'
 
 noDustSKIRTPath = SKIRTPath + 'noDust/'
 SKIRTPath += 'dust/dustFraction'+args.dustFraction+'/maxTemp'+args.maxTemp+'/'
@@ -142,11 +197,14 @@ if eval(args.clumps):
 else:
     SKIRTPath += 'noClumps/'
     particlePath += 'noClumps/'
+particlePathNoSF += 'noClumps/'
 
 SKIRTPath += 'numPhotons'+args.numPhotons+'/'+args.SSP+'/'
 noDustSKIRTPath += 'numPhotons'+args.numPhotons+'/'+args.SSP+'/'
 
 os.system('mkdir -p '+savePath)
+if storeImages:
+    os.system('mkdir -p '+savePath+'resolved/')
 
 band_names = np.asarray(['FUV', 'NUV', 'u', 'g', 'r', 'i', 'z', '2MASS_J', 
               '2MASS_H', '2MASS_KS', 'W1', 'W2', 'W3', 'W4', 'PACS70', 
@@ -163,12 +221,18 @@ names = ['g1.88e10','g1.89e10','g1.90e10','g2.34e10','g2.63e10','g2.64e10','g2.8
             'g1.77e12','g1.92e12','g2.79e12']
 
 numOrientations = 10
+numBins = 200 # number of bins for stored SFH / CEH
 
 galaxies_dtype = [('name', str, 20),
                   ('stellar_mass', np.float32),
                   ('sfr', np.float32),
+                  ('sfh', np.float32, numBins),
+                  ('ceh', np.float32, (numBins, numBins)),
+                  ('ages', np.float32, numBins),
+                  ('metals', np.float32, numBins),
                   ('dust_mass', np.float32),
-                  ('axis_ratios', np.float32, numOrientations)]
+                  ('axis_ratios', np.float32, numOrientations),
+                  ('size', np.float32)]
 
 summary_dtype = [('name', str, 20),
                  ('stellar_mass', np.float32),
@@ -180,7 +244,8 @@ summary_dtype = [('name', str, 20),
                  ('emitted_energy', np.float32),
                  ('bands', band_names.dtype, len(band_names)),
                  ('flux', np.float32, len(band_names)),
-                 ('flux_nodust', np.float32, len(band_names))]
+                 ('flux_nodust', np.float32, len(band_names)),
+                 ('size', np.float32)]
 
 image_summary_dtype = [('name', str, 20),
                  ('stellar_mass', np.float32),
@@ -190,12 +255,11 @@ image_summary_dtype = [('name', str, 20),
                  ('Av', np.float32),
                  ('bands', band_names.dtype, len(band_names)),
                  ('flux', np.float32, (len(band_names), reducedPixels, reducedPixels)),
-                 ('flux_nodust', np.float32, (len(band_names), reducedPixels, reducedPixels))]
+                 ('flux_nodust', np.float32, (len(band_names), reducedPixels, reducedPixels)),
+                 ('size', np.float32)]
 
 galaxies = np.zeros(len(names), dtype=galaxies_dtype)
 summary = np.zeros(len(names) * numOrientations, dtype=summary_dtype)
-if storeImages:
-    image_summary = np.zeros(len(names) * numOrientations, dtype=image_summary_dtype)
 
 wave = None
 attenuation_mags = None
@@ -203,16 +267,38 @@ attenuation_mags = None
 indx = 0
 
 for i in range(len(names)):
+    if storeImages:
+        image_galaxies = np.zeros(1, dtype=galaxies_dtype)
+        image_summary = np.zeros(numOrientations, dtype=image_summary_dtype)
     stellarMass = getStellarMass(names[i])
     SFR = getSFR(names[i])
+    SFH, ages = getSFH(names[i])
+    CEH, metals = getCEH(names[i])
     dustMass = getDustMass(names[i])
     selections = np.load(selectedPath+names[i]+'/selectedIncAzAR.npy') # [inc, az, axisRatio]
     axisRatios = selections[:,2]
+    size = getSize(names[i])
     galaxies['name'][i] = names[i]
     galaxies['stellar_mass'][i] = stellarMass
     galaxies['sfr'][i] = SFR
+    galaxies['sfh'][i] = SFH
+    galaxies['ceh'][i] = CEH
+    galaxies['ages'][i] = ages
+    galaxies['metals'][i] = metals
     galaxies['dust_mass'][i] = dustMass
     galaxies['axis_ratios'][i] = axisRatios
+    galaxies['size'][i] = size
+    if storeImages:
+        image_galaxies['name'] = names[i]
+        image_galaxies['stellar_mass'] = stellarMass
+        image_galaxies['sfr'] = SFR
+        image_galaxies['sfh'] = SFH
+        image_galaxies['ceh'] = CEH
+        image_galaxies['ages'] = ages
+        image_galaxies['metals'] = metals
+        image_galaxies['dust_mass'] = dustMass
+        image_galaxies['axis_ratios'] = axisRatios
+        image_galaxies['size'] = size
     for j in range(numOrientations): # loop through orientations
         instName = 'axisRatio' + str(np.round_(axisRatios[j], decimals=4)) # orientation naming system
         # Spatially integrated
@@ -243,6 +329,7 @@ for i in range(len(names)):
         summary['flux_nodust'][indx, :] = noDustBB
         summary['attenuated_energy'][indx] = attEnergy
         summary['emitted_energy'][indx] = emitEnergy
+        summary['size'][indx] = galaxies['size'][i]
         spectrum[indx, :] = spec
         spectrum_nodust[indx, :] = noDustSpec
         attenuation_mags[indx, :] = attenuationMags
@@ -255,17 +342,21 @@ for i in range(len(names)):
             noDustImageBB = np.asarray(noDustImageFile[0].data) # (20, 2000, 2000) bands in MJy/st
             noDustImageBB = reduceImageSize(noDustImageBB) # (20, 500, 500)
             # Store resolved data
-            image_summary['name'][indx] = galaxies['name'][i]
-            image_summary['stellar_mass'][indx] = galaxies['stellar_mass'][i]
-            image_summary['sfr'][indx] = galaxies['sfr'][i]
-            image_summary['dust_mass'][indx] = galaxies['dust_mass'][i]
-            image_summary['axis_ratio'][indx] = galaxies['axis_ratios'][i, j]
-            image_summary['Av'][indx] = Av
-            image_summary['bands'][indx] = band_names
-            image_summary['flux'][indx, :] = imageBB
-            image_summary['flux_nodust'][indx, :] = noDustImageBB
+            image_summary['name'][j] = galaxies['name'][i]
+            image_summary['stellar_mass'][j] = galaxies['stellar_mass'][i]
+            image_summary['sfr'][j] = galaxies['sfr'][i]
+            image_summary['dust_mass'][j] = galaxies['dust_mass'][i]
+            image_summary['axis_ratio'][j] = galaxies['axis_ratios'][i, j]
+            image_summary['Av'][j] = Av
+            image_summary['bands'][j] = band_names
+            image_summary['flux'][j, :] = imageBB
+            image_summary['flux_nodust'][j, :] = noDustImageBB
+            image_summary['size'][j] = galaxies['size'][i]
         # Increase indx
         indx += 1
+        if storeImages:
+            fitsio.write(savePath+'resolved/'+names[i]+'_nihao-resolved-photometry.fits', image_galaxies, extname='GALAXIES', clobber=True)
+            fitsio.write(savePath+'resolved/'+names[i]+'_nihao-resolved-photometry.fits', image_summary, extname='SUMMARY', clobber=False)
 
 fitsio.write(savePath+'nihao-integrated-seds.fits', galaxies, extname='GALAXIES', clobber=True)
 fitsio.write(savePath+'nihao-integrated-seds.fits', summary, extname='SUMMARY', clobber=False)
@@ -275,8 +366,8 @@ fitsio.write(savePath+'nihao-integrated-seds.fits', spectrum_nodust, extname='SP
 fitsio.write(savePath+'nihao-integrated-seds.fits', attenuationWave, extname='ATTENUATION_WAVE', clobber=False)
 fitsio.write(savePath+'nihao-integrated-seds.fits', attenuation_mags, extname='ATTENUATION_MAGS', clobber=False)
 
-if storeImages:
-    fitsio.write(savePath+'nihao-resolved-photometry.fits', galaxies, extname='GALAXIES', clobber=True)
-    fitsio.write(savePath+'nihao-resolved-photometry.fits', image_summary, extname='SUMMARY', clobber=False)
+#if storeImages:
+#    fitsio.write(savePath+'nihao-resolved-photometry.fits', galaxies, extname='GALAXIES', clobber=True)
+#    fitsio.write(savePath+'nihao-resolved-photometry.fits', image_summary, extname='SUMMARY', clobber=False)
 
 print('done')

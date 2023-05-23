@@ -33,15 +33,21 @@ for i in range(len(galaxies)):
     ageSmoothAges = ageSmoothStars[:,9]/1e9 # in Gyrs
     # SFH grids
     binGrid1 = np.linspace(0,14,num=100)
+    yearsPerBin1 = 1.4e10 / 100
     binGrid2 = np.linspace(0,14,num=1000)
+    yearsPerBin2 = 1.4e10 / 1000
     # Make histograms    
     plt.figure(figsize=(10,8))
-    counts, bins = np.histogram(noAgeSmoothAges, bins=binGrid1, weights=noAgeSmoothMasses, density=True)
-    plt.hist(bins[:-1], bins, weights=counts*noAgeSmoothTotMass, alpha=1, label='Before Smoothing', color='red')
-    newCounts, newBins = np.histogram(ageSmoothAges, bins=binGrid2, weights=ageSmoothMasses, density=True)
-    plt.hist(newBins[:-1], newBins, weights=newCounts*ageSmoothTotMass, alpha=0.5, label='After Smoothing', color='blue')
-    plt.xlabel('Age (Gyrs)', fontsize=28)
-    plt.ylabel('SFH ('+r'$M_{\odot}$'+' / year)', fontsize=28)
+    #counts, bins = np.histogram(noAgeSmoothAges, bins=binGrid1, weights=noAgeSmoothMasses, density=True)
+    #plt.hist(bins[:-1], bins, weights=counts*noAgeSmoothTotMass, alpha=1, label='Before Smoothing', color='red')
+    #newCounts, newBins = np.histogram(ageSmoothAges, bins=binGrid2, weights=ageSmoothMasses, density=True)
+    #plt.hist(newBins[:-1], newBins, weights=newCounts*ageSmoothTotMass, alpha=0.5, label='After Smoothing', color='blue')
+    counts, bins = np.histogram(noAgeSmoothAges, bins=binGrid1, weights=noAgeSmoothMasses/yearsPerBin1, density=False)
+    plt.hist(bins[:-1], bins, weights=counts, alpha=1, label='Before Smoothing', color='red')
+    newCounts, newBins = np.histogram(ageSmoothAges, bins=binGrid2, weights=ageSmoothMasses/yearsPerBin2, density=False)
+    plt.hist(newBins[:-1], newBins, weights=newCounts, alpha=0.5, label='After Smoothing', color='blue')
+    plt.xlabel('Age [Gyrs]', fontsize=28)
+    plt.ylabel('SFH ['+r'$M_{\odot} \, / \, year$]', fontsize=28)
     plt.xticks(fontsize=28)
     plt.yticks(fontsize=28)
     plt.yscale('log')
